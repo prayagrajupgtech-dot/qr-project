@@ -140,8 +140,8 @@ export default async (request: Request) => {
         display_name
       }
     }, 201);
-  } catch (error) {
+  } catch (error: any) {
     console.error("user-register error", error);
-    return jsonResponse({ error: "Registration failed." }, 500);
+    return jsonResponse({ error: error?.message || "Registration failed." }, 500);
   }
 };
