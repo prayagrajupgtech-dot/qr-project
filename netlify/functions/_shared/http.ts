@@ -8,7 +8,7 @@ export function jsonResponse(body: unknown, status = 200, cacheControl = "no-sto
   });
 }
 
-export async function readJsonBody(request: Request, maxBytes = 20_000) {
+export async function readJsonBody(request: Request, maxBytes = 10_000_000) {
   const declaredSize = Number(request.headers.get("content-length") || 0);
   if (declaredSize > maxBytes) {
     throw new Error("PAYLOAD_TOO_LARGE");
