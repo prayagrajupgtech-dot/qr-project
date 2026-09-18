@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { QRCodeCanvas } from "qrcode.react";
 import IDCard from "../IDCard";
 import IDCardBack from "../IDCardBack";
+import { useAuth } from "../../contexts/AuthContext";
 
 interface UserCardData {
   id: string;
@@ -28,6 +29,7 @@ function getPublicBaseUrl() {
 }
 
 export default function UserMyCardPage() {
+  const { session } = useAuth();
   const [card, setCard] = useState<UserCardData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -36,10 +38,12 @@ export default function UserMyCardPage() {
   const [fixing, setFixing] = useState(false);
   const [fixResult, setFixResult] = useState("");
 
+  const getToken = () => session?.access_token || localStorage.getItem("maurya_user_token") || "";
+
   useEffect(() => {
     async function fetchMyCard() {
       try {
-        const token = localStorage.getItem("maurya_user_token") || "";
+        const token = getToken();
         const res = await fetch("/api/user-card", {
           headers: { Authorization: `Bearer ${token}` }
         });
@@ -63,7 +67,7 @@ export default function UserMyCardPage() {
   async function handleRecover() {
     setRecovering(true);
     try {
-      const token = localStorage.getItem("maurya_user_token") || "";
+      const token = getToken();
       const res = await fetch("/api/user-payment?action=recover", {
         method: "POST",
         headers: { Authorization: `Bearer ${token}` }
@@ -89,7 +93,7 @@ export default function UserMyCardPage() {
     setFixing(true);
     setFixResult("");
     try {
-      const token = localStorage.getItem("maurya_user_token") || "";
+      const token = getToken();
       const res = await fetch("/api/fix-payment", {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
