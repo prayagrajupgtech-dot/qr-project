@@ -122,7 +122,7 @@ export default function UserApplicationForm() {
               const found = countries.find(c => c.name === app.country || c.code === app.country_code);
               if (found) setCountry(found.code);
             }
-            setDateOfBirth(app.date_of_birth || "");
+            setDateOfBirth(app.date_of_birth ? String(app.date_of_birth).slice(0, 10) : "");
             setAddress(app.address || "");
             setPhoto(app.photo_url || "");
             if (app.plan_id) selectedId = app.plan_id;
