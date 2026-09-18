@@ -32,6 +32,8 @@ export default function UserMyCardPage() {
   const [error, setError] = useState("");
   const [isCardFlipped, setIsCardFlipped] = useState(false);
   const [recovering, setRecovering] = useState(false);
+  const [fixing, setFixing] = useState(false);
+  const [fixResult, setFixResult] = useState("");
 
   useEffect(() => {
     async function fetchMyCard() {
@@ -82,6 +84,32 @@ export default function UserMyCardPage() {
     }
   }
 
+  async function handleFixPayment() {
+    setFixing(true);
+    setFixResult("");
+    try {
+      const token = localStorage.getItem("maurya_user_token") || "";
+      const res = await fetch("/api/fix-payment", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        body: JSON.stringify({
+          paymentId: "pay_TdciDfJfZbKnIMs",
+          orderId: "order_Tdch4GttO4xJdj"
+        })
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        window.location.reload();
+      } else {
+        setFixResult(data.error || "Fix failed.");
+      }
+    } catch {
+      setFixResult("Fix request failed.");
+    } finally {
+      setFixing(false);
+    }
+  }
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
@@ -119,6 +147,14 @@ export default function UserMyCardPage() {
           >
             {recovering ? "Recovering..." : "Recover Card from Payment"}
           </button>
+          <button
+            onClick={handleFixPayment}
+            disabled={fixing}
+            className="mt-4 ml-2 bg-emerald-500 text-black text-xs font-black uppercase tracking-[2px] px-6 py-3 rounded-xl disabled:opacity-40"
+          >
+            {fixing ? "Creating Card..." : "Fix My Payment (Razorpay)"}
+          </button>
+          {fixResult && <p className="text-red-400 text-xs mt-2">{fixResult}</p>}
         </div>
       </div>
     );
