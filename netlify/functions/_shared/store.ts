@@ -511,9 +511,10 @@ export async function saveApplication(app: Partial<CardApplicationRecord>): Prom
         }
         if (data) return data as CardApplicationRecord;
       } else {
+        const { id: _unused, ...insertData } = app as any;
         const { data, error } = await supabase
           .from("card_applications")
-          .insert([{ ...app, created_at: now, updated_at: now }])
+          .insert([{ ...insertData, created_at: now, updated_at: now }])
           .select()
           .single();
         if (error) {
