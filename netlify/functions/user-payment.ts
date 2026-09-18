@@ -336,15 +336,56 @@ export default async (request: Request) => {
     try {
       const supabase = getSupabaseAdmin();
 
-      // Find all successful payments for this user
-      const { data: payments, error: pErr } = await supabase
+      // Find all successful payments for this user (by user_id OR by email in application)
+      let { data: payments, error: pErr } = await supabase
         .from("payments")
-        .select("id, application_id, plan_id")
+        .select("id, application_id, plan_id, user_id")
         .eq("user_id", authUser.userId)
         .eq("status", "success");
 
       if (pErr) return jsonResponse({ error: pErr.message }, 500);
-      if (!payments || payments.length === 0) return jsonResponse({ message: "No successful payments found." });
+
+      // Also find payments linked via applications with this user's email
+      if (!payments || payments.length === 0) {
+        const { data: appPayments } = await supabase
+          .from("payments")
+          .select("id, application_id, plan_id, user_id, card_applications!inner(user_id)")
+          .eq("status", "success")
+          .eq("card_applications.user_id", authUser.userId);
+        if (appPayments && appPayments.length > 0) {
+          payments = appPayments.map((p: any) => ({
+            id: p.id,
+            application_id: p.application_id,
+            plan_id: p.plan_id,
+            user_id: p.user_id
+          }));
+        }
+      }
+
+      // If still none, find ANY payments with no user_id (orphaned) and assign
+      if (!payments || payments.length === 0) {
+        const { data: orphanPayments } = await supabase
+          .from("payments")
+          .select("id, application_id, plan_id, user_id")
+          .eq("status", "success")
+          .or("user_id.is.null");
+        if (orphanPayments && orphanPayments.length > 0) {
+          payments = orphanPayments;
+        }
+      }
+
+      if (!payments || payments.length === 0) {
+        // Debug: check ALL payments
+        const { data: allPayments } = await supabase
+          .from("payments")
+          .select("id, user_id, status, application_id")
+          .order("created_at", { ascending: false })
+          .limit(10);
+        return jsonResponse({
+          message: "No successful payments found for your account.",
+          debug: { totalPayments: allPayments?.length || 0, userId: authUser.userId, payments: allPayments || [] }
+        });
+      }
 
       const recovered: string[] = [];
 
@@ -357,6 +398,11 @@ export default async (request: Request) => {
           .limit(1);
 
         if (existingCards && existingCards.length > 0) continue;
+
+        // Fix orphaned payment user_id
+        if (!payment.user_id) {
+          await supabase.from("payments").update({ user_id: authUser.userId }).eq("id", payment.id);
+        }
 
         // Get application
         const application = payment.application_id

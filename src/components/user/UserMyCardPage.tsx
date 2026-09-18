@@ -68,8 +68,10 @@ export default function UserMyCardPage() {
       const data = await res.json();
       if (res.ok && data.recovered && data.recovered.length > 0) {
         window.location.reload();
+      } else if (res.ok && data.debug) {
+        setError(`No payments found. Debug: ${data.debug.totalPayments} total payments in DB. Your User ID: ${data.debug.userId}`);
       } else if (res.ok) {
-        setError("No pending payments found to recover.");
+        setError(data.message || "No pending payments found to recover.");
       } else {
         setError(data.error || "Could not recover card.");
       }
