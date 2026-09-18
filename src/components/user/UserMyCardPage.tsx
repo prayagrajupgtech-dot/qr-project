@@ -31,6 +31,7 @@ export default function UserMyCardPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [isCardFlipped, setIsCardFlipped] = useState(false);
+  const [recovering, setRecovering] = useState(false);
 
   useEffect(() => {
     async function fetchMyCard() {
@@ -52,6 +53,29 @@ export default function UserMyCardPage() {
     }
     fetchMyCard();
   }, []);
+
+  async function handleRecover() {
+    setRecovering(true);
+    try {
+      const token = localStorage.getItem("auth_token") || "";
+      const res = await fetch("/api/user-payment?action=recover", {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      const data = await res.json();
+      if (res.ok && data.recovered && data.recovered.length > 0) {
+        window.location.reload();
+      } else if (res.ok) {
+        setError("No pending payments found to recover.");
+      } else {
+        setError(data.error || "Could not recover card.");
+      }
+    } catch {
+      setError("Recovery request failed.");
+    } finally {
+      setRecovering(false);
+    }
+  }
 
   if (loading) {
     return (
@@ -83,6 +107,13 @@ export default function UserMyCardPage() {
           <p className="text-sm text-white/30 mt-2">
             Your ID card has not been created yet. Please contact the administrator.
           </p>
+          <button
+            onClick={handleRecover}
+            disabled={recovering}
+            className="mt-4 bg-amber-500 text-black text-xs font-black uppercase tracking-[2px] px-6 py-3 rounded-xl disabled:opacity-40"
+          >
+            {recovering ? "Recovering..." : "Recover Card from Payment"}
+          </button>
         </div>
       </div>
     );

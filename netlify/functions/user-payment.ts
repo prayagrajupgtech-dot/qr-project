@@ -11,6 +11,7 @@ import {
   saveNotification
 } from "./_shared/store.js";
 import { getRazorpayOrderConfig, verifyHmac } from "./_shared/razorpay.js";
+import { getSupabaseAdmin } from "./_shared/supabase.js";
 
 export default async (request: Request) => {
   if (request.method !== "POST") return jsonResponse({ error: "Method not allowed." }, 405);
@@ -144,8 +145,9 @@ export default async (request: Request) => {
         card_number: cardNumber,
         name: application?.full_name || "",
         phone: application?.phone || "",
-        date_of_birth: application?.date_of_birth || "",
+        date_of_birth: application?.date_of_birth?.slice(0, 10) || "2000-01-01",
         address: application?.address || "",
+        edit_token_hash: crypto.randomUUID(),
         photo_url: application?.photo_url || undefined,
         country: application?.country || undefined,
         country_code: application?.country_code || undefined,
@@ -244,8 +246,9 @@ export default async (request: Request) => {
                 card_number: cardNumber,
                 name: application?.full_name || "",
                 phone: application?.phone || "",
-                date_of_birth: application?.date_of_birth || "",
+                date_of_birth: application?.date_of_birth?.slice(0, 10) || "2000-01-01",
                 address: application?.address || "",
+                edit_token_hash: crypto.randomUUID(),
                 photo_url: application?.photo_url || undefined,
                 country: application?.country || undefined,
                 country_code: application?.country_code || undefined,
@@ -322,6 +325,79 @@ export default async (request: Request) => {
     } catch (error) {
       console.error("user-payment webhook error:", error);
       return jsonResponse({ error: "Webhook processing failed." }, 500);
+    }
+  }
+
+  // --- Recover cards for successful payments that didn't get cards ---
+  if (action === "recover") {
+    const authUser = await verifyUserSession(request);
+    if (!authUser) return jsonResponse({ error: "Authentication required." }, 401);
+
+    try {
+      const supabase = getSupabaseAdmin();
+
+      // Find all successful payments for this user
+      const { data: payments, error: pErr } = await supabase
+        .from("payments")
+        .select("id, application_id, plan_id")
+        .eq("user_id", authUser.userId)
+        .eq("status", "success");
+
+      if (pErr) return jsonResponse({ error: pErr.message }, 500);
+      if (!payments || payments.length === 0) return jsonResponse({ message: "No successful payments found." });
+
+      const recovered: string[] = [];
+
+      for (const payment of payments) {
+        // Check if card already exists for this payment
+        const { data: existingCards } = await supabase
+          .from("id_cards")
+          .select("id")
+          .eq("payment_id", payment.id)
+          .limit(1);
+
+        if (existingCards && existingCards.length > 0) continue;
+
+        // Get application
+        const application = payment.application_id
+          ? await getApplicationById(payment.application_id)
+          : null;
+
+        const cardNumber = `MRY-${crypto.randomUUID().replace(/-/g, "").slice(0, 8).toUpperCase()}`;
+        const qrToken = crypto.randomUUID();
+
+        const newCard = await addCard({
+          id: crypto.randomUUID(),
+          card_number: cardNumber,
+          name: application?.full_name || "",
+          phone: application?.phone || "",
+          date_of_birth: application?.date_of_birth?.slice(0, 10) || "2000-01-01",
+          address: application?.address || "",
+          edit_token_hash: crypto.randomUUID(),
+          photo_url: application?.photo_url || undefined,
+          country: application?.country || undefined,
+          country_code: application?.country_code || undefined,
+          user_id: authUser.userId,
+          application_id: payment.application_id || undefined,
+          plan_id: payment.plan_id || undefined,
+          payment_id: payment.id,
+          qr_token: qrToken,
+          status: "active",
+          issued_at: new Date().toISOString(),
+          created_at: new Date().toISOString()
+        });
+
+        if (payment.application_id) {
+          await saveApplication({ id: payment.application_id, status: "card_issued" });
+        }
+
+        recovered.push(cardNumber);
+      }
+
+      return jsonResponse({ recovered, count: recovered.length });
+    } catch (error) {
+      console.error("user-payment recover error:", error);
+      return jsonResponse({ error: "Could not recover cards." }, 500);
     }
   }
 

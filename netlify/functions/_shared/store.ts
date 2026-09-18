@@ -405,9 +405,14 @@ export async function addCard(card: CardRecord): Promise<CardRecord> {
     try {
       const supabase = getSupabaseAdmin();
       const { data, error } = await supabase.from("id_cards").insert([card]).select().single();
-      if (!error && data) return data as CardRecord;
+      if (error) {
+        console.error("Supabase add card error:", error.message);
+        throw new Error(error.message);
+      }
+      if (data) return data as CardRecord;
     } catch (e) {
-      console.warn("Supabase add card failed", e);
+      console.error("Supabase add card failed:", e);
+      throw e;
     }
   }
   mockCards.push(card);
@@ -625,16 +630,24 @@ export async function savePayment(payment: Partial<PaymentRecord>): Promise<Paym
           .eq("id", payment.id)
           .select()
           .single();
-        if (!error && data) return data as PaymentRecord;
+        if (error) {
+          console.error("Supabase update payment error:", error.message);
+          throw new Error(error.message);
+        }
+        if (data) return data as PaymentRecord;
       } else {
         const { data, error } = await supabase
           .from("payments")
           .insert([{ ...payment, created_at: now, updated_at: now }])
           .select()
           .single();
-        if (!error && data) return data as PaymentRecord;
+        if (error) {
+          console.error("Supabase insert payment error:", error.message);
+          throw new Error(error.message);
+        }
+        if (data) return data as PaymentRecord;
       }
-    } catch (e) { console.warn("Supabase save payment failed", e); }
+    } catch (e) { console.error("Supabase save payment failed:", e); throw e; }
   }
   return payment as PaymentRecord;
 }
