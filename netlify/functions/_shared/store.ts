@@ -498,6 +498,28 @@ export async function saveApplication(app: Partial<CardApplicationRecord>): Prom
   if (isSupabaseConfigured()) {
     try {
       const supabase = getSupabaseAdmin();
+
+      // Ensure user_profiles exists for this user_id
+      if (app.user_id) {
+        const { data: existingUser } = await supabase
+          .from("user_profiles")
+          .select("id")
+          .eq("id", app.user_id)
+          .maybeSingle();
+        if (!existingUser) {
+          await supabase.from("user_profiles").insert([{
+            id: app.user_id,
+            email: app.email || "",
+            display_name: app.full_name || "",
+            phone: app.phone || "",
+            role: "user",
+            status: "active",
+            created_at: now,
+            updated_at: now
+          }]);
+        }
+      }
+
       if (app.id) {
         const { data, error } = await supabase
           .from("card_applications")
