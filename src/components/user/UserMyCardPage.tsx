@@ -8,6 +8,7 @@ interface UserCardData {
   cardNumber: string;
   name: string;
   phone: string;
+  parentPhone: string | null;
   dateOfBirth: string;
   address: string;
   photoUrl: string | null;
@@ -198,6 +199,7 @@ export default function UserMyCardPage() {
                   data={{
                     name: card.name,
                     phone: card.phone,
+                    parentPhone: card.parentPhone || undefined,
                     photo: card.photoUrl || "",
                     signature: "",
                     idNumber: card.cardNumber,

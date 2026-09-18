@@ -82,6 +82,8 @@ create index if not exists card_applications_status_idx on public.card_applicati
 -- Supports existing installations that already created card_applications.
 alter table public.card_applications add column if not exists parent_phone text;
 
+alter table public.id_cards add column if not exists parent_phone text;
+
 alter table public.card_applications enable row level security;
 revoke all on public.card_applications from anon, authenticated;
 grant select, insert, update, delete on public.card_applications to service_role;

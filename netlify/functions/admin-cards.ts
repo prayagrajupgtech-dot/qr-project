@@ -148,6 +148,7 @@ export default async (request: Request) => {
         card_number: cardNumber,
         name,
         phone,
+        parent_phone: null,
         date_of_birth: dateOfBirth?.slice(0, 10) || "2000-01-01",
         address,
         edit_token_hash: crypto.randomUUID(),

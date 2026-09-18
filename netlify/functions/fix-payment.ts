@@ -94,6 +94,7 @@ export default async (request: Request) => {
       card_number: cardNumber,
       name: app?.full_name || profile?.display_name || "",
       phone: app?.phone || profile?.phone || "",
+      parent_phone: app?.parent_phone || null,
       date_of_birth: app?.date_of_birth?.slice(0, 10) || "2000-01-01",
       address: app?.address || "",
       edit_token_hash: crypto.randomUUID(),

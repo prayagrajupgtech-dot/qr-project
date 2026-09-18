@@ -84,8 +84,10 @@ export interface CardRecord {
   card_number: string;
   name: string;
   phone: string;
+  parent_phone?: string | null;
   date_of_birth: string;
   address: string;
+  edit_token_hash?: string;
   photo_url?: string;
   country?: string;
   country_code?: string;

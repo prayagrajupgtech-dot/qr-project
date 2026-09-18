@@ -35,7 +35,7 @@ export default async (request: Request) => {
 
       const { data: cards, error } = await supabase
         .from("id_cards")
-        .select("id, card_number, name, phone, date_of_birth, address, photo_url, status, plan_id, created_at")
+        .select("id, card_number, name, phone, parent_phone, date_of_birth, address, photo_url, status, plan_id, created_at")
         .eq("user_id", authUser.userId)
         .order("created_at", { ascending: false })
         .limit(1);
@@ -56,6 +56,7 @@ export default async (request: Request) => {
           cardNumber: card.card_number,
           name: card.name,
           phone: card.phone,
+          parentPhone: (card as any).parent_phone || null,
           dateOfBirth: card.date_of_birth,
           address: card.address,
           photoUrl: card.photo_url || null,
