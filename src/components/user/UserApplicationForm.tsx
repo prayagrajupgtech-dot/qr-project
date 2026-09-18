@@ -387,7 +387,7 @@ export default function UserApplicationForm() {
       }
 
       if (!appId) {
-        setError("Could not create application. Please try again.");
+        setError(saveData?.error || "Could not create application. Please try again.");
         setIssuing(false);
         return;
       }

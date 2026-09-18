@@ -505,16 +505,27 @@ export async function saveApplication(app: Partial<CardApplicationRecord>): Prom
           .eq("id", app.id)
           .select()
           .single();
-        if (!error && data) return data as CardApplicationRecord;
+        if (error) {
+          console.error("Supabase update application error:", error.message);
+          throw new Error(error.message);
+        }
+        if (data) return data as CardApplicationRecord;
       } else {
         const { data, error } = await supabase
           .from("card_applications")
           .insert([{ ...app, created_at: now, updated_at: now }])
           .select()
           .single();
-        if (!error && data) return data as CardApplicationRecord;
+        if (error) {
+          console.error("Supabase insert application error:", error.message);
+          throw new Error(error.message);
+        }
+        if (data) return data as CardApplicationRecord;
       }
-    } catch (e) { console.warn("Supabase save application failed", e); }
+    } catch (e) {
+      console.error("Supabase save application failed:", e);
+      throw e;
+    }
   }
   return app as CardApplicationRecord;
 }
