@@ -27,13 +27,18 @@ function loadEnv() {
 const handlerCache: Record<string, (req: Request) => Promise<Response> | Response> = {};
 async function loadHandler(name: string) {
   if (handlerCache[name]) return handlerCache[name];
-  try {
-    const mod = await import(`./netlify/functions/${name}.js`);
-    handlerCache[name] = mod.default;
-    return handlerCache[name];
-  } catch {
-    return null;
+  const tryPaths = [
+    `./netlify/functions/${name}.ts`,
+    `./netlify/functions/${name}.js`
+  ];
+  for (const p of tryPaths) {
+    try {
+      const mod = await import(p);
+      handlerCache[name] = mod.default;
+      return handlerCache[name];
+    } catch {}
   }
+  return null;
 }
 
 // Guess content type
