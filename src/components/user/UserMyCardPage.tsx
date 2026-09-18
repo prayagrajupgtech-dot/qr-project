@@ -36,7 +36,10 @@ export default function UserMyCardPage() {
   useEffect(() => {
     async function fetchMyCard() {
       try {
-        const res = await fetch("/api/user-card");
+        const token = localStorage.getItem("maurya_user_token") || "";
+        const res = await fetch("/api/user-card", {
+          headers: { Authorization: `Bearer ${token}` }
+        });
         const data = await res.json();
         if (res.status === 403) {
           setError(data.error || "Your account has been blocked.");
@@ -57,7 +60,7 @@ export default function UserMyCardPage() {
   async function handleRecover() {
     setRecovering(true);
     try {
-      const token = localStorage.getItem("auth_token") || "";
+      const token = localStorage.getItem("maurya_user_token") || "";
       const res = await fetch("/api/user-payment?action=recover", {
         method: "POST",
         headers: { Authorization: `Bearer ${token}` }
