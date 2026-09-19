@@ -199,10 +199,10 @@ export default function AdminCardsList() {
 
       {/* View / Print Modal */}
       {viewCard && (
-        <div className="fixed inset-0 z-[70] overflow-y-auto bg-black/70 p-4" onClick={() => setViewCard(null)}>
-          <div className="min-h-full flex">
+        <div className="print-modal-overlay fixed inset-0 z-[70] overflow-y-auto bg-black/70 p-4" onClick={() => setViewCard(null)}>
+          <div className="print-modal-scroll min-h-full flex">
           <div
-            className={`m-auto w-full max-w-2xl rounded-[2rem] border p-6 sm:p-8 ${isDark ? "bg-slate-950 border-white/10" : "bg-white border-[#bbf7d0]"}`}
+            className={`print-modal-box m-auto w-full max-w-2xl rounded-[2rem] border p-6 sm:p-8 ${isDark ? "bg-slate-950 border-white/10" : "bg-white border-[#bbf7d0]"}`}
             onClick={e => e.stopPropagation()}
           >
             <div className="flex items-center justify-between mb-6 no-print">

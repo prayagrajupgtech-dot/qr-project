@@ -231,14 +231,29 @@ html.light [style*="color: #166534"] {
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
   }
+  /* Neutralize the fixed modal / flex / scroll wrappers - they block page breaks */
+  .print-modal-overlay,
+  .print-modal-scroll,
+  .print-modal-box {
+    position: static !important;
+    overflow: visible !important;
+    display: block !important;
+    background: #fff !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    border: none !important;
+    min-height: auto !important;
+    max-width: none !important;
+  }
   #admin-card-print {
-    position: absolute;
-    left: 0;
-    right: 0;
-    top: 0;
+    position: static;
+    display: block;
     margin: 0 auto;
-    padding: 16px;
+    padding: 0;
     background: #fff;
+  }
+  #admin-card-print .overflow-x-auto {
+    overflow: visible !important;
   }
   #admin-card-print > div {
     page-break-inside: avoid;
