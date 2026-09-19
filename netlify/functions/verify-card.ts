@@ -24,7 +24,7 @@ export default async (request: Request) => {
       if (isUuid) {
         const result = await supabase
           .from("id_cards")
-          .select("id, card_number, name, phone, date_of_birth, address, photo_url, status, user_id, plan_id, created_at")
+          .select("id, card_number, name, phone, parent_phone, date_of_birth, address, photo_url, status, user_id, plan_id, created_at")
           .eq("id", id)
           .maybeSingle();
         data = result.data;
@@ -34,7 +34,7 @@ export default async (request: Request) => {
       if (!data) {
         const result = await supabase
           .from("id_cards")
-          .select("id, card_number, name, phone, date_of_birth, address, photo_url, status, user_id, plan_id, created_at")
+          .select("id, card_number, name, phone, parent_phone, date_of_birth, address, photo_url, status, user_id, plan_id, created_at")
           .eq("card_number", id)
           .maybeSingle();
         data = result.data;
@@ -60,6 +60,7 @@ export default async (request: Request) => {
         createdAt: data.created_at,
         name: data.name,
         phone: data.phone,
+        parentPhone: data.parent_phone || null,
         dateOfBirth: data.date_of_birth,
         address: data.address,
         photoUrl: data.photo_url || null,
@@ -87,6 +88,7 @@ export default async (request: Request) => {
       createdAt: card.created_at,
       name: card.name,
       phone: card.phone,
+      parentPhone: (card as { parent_phone?: string }).parent_phone || null,
       dateOfBirth: card.date_of_birth,
       address: card.address,
       photoUrl: card.photo_url || null,

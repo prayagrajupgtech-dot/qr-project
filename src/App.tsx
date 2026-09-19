@@ -56,6 +56,7 @@ interface VerificationData {
   idNumber: string;
   name: string;
   phone: string;
+  parentPhone?: string | null;
   photoUrl?: string;
   dateOfBirth?: string;
   address?: string;
@@ -147,6 +148,7 @@ function AppInner() {
             idNumber: result.cardNumber,
             name: result.name,
             phone: result.phone,
+            parentPhone: result.parentPhone || null,
             photoUrl: result.photoUrl,
             dateOfBirth: result.dateOfBirth,
             address: result.address,
