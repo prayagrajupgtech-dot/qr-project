@@ -21,6 +21,39 @@ export default async (request: Request) => {
 
     if (request.method === "POST") {
       const body = await readJsonBody(request, 1_000);
+      const action = typeof body.action === "string" ? body.action : "login";
+
+      // Handle change-password action
+      if (action === "change-password") {
+        const currentPassword = typeof body.currentPassword === "string" ? body.currentPassword : "";
+        const newPassword = typeof body.newPassword === "string" ? body.newPassword : "";
+
+        if (!currentPassword || !newPassword) {
+          return jsonResponse({ error: "Current and new password are required." }, 400);
+        }
+        if (newPassword.length < 8) {
+          return jsonResponse({ error: "New password must be at least 8 characters." }, 400);
+        }
+
+        let currentValid = false;
+        try {
+          currentValid = await verifyAdminPassword(currentPassword);
+        } catch {
+          return jsonResponse({ error: "Admin authentication is not configured." }, 500);
+        }
+        if (!currentValid) {
+          return jsonResponse({ error: "Current password is incorrect." }, 401);
+        }
+
+        // For env-based auth, we can't actually change the password server-side
+        // (it's stored in .env). Return success with a note.
+        return jsonResponse({
+          success: true,
+          message: "Password verified. For env-based admin auth, update ADMIN_PASSWORD in your .env file and redeploy."
+        });
+      }
+
+      // Default login action
       const password = typeof body.password === "string" ? body.password : "";
 
       if (!password) {
