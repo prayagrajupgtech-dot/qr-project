@@ -228,6 +228,8 @@ html.light [style*="color: #166534"] {
   #admin-card-print,
   #admin-card-print * {
     visibility: visible;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
   }
   #admin-card-print {
     position: absolute;
@@ -237,6 +239,10 @@ html.light [style*="color: #166534"] {
     margin: 0 auto;
     padding: 16px;
     background: #fff;
+  }
+  #admin-card-print > div {
+    page-break-inside: avoid;
+    break-inside: avoid;
   }
   .no-print {
     display: none !important;
