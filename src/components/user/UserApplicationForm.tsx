@@ -160,12 +160,39 @@ export default function UserApplicationForm() {
 
   const progress = calculateProgress();
 
+  // Age check - only 18 years or older can apply.
+  const calculateAge = (dobStr: string): number | null => {
+    if (!dobStr) return null;
+    const parts = dobStr.split("-").map(Number);
+    if (parts.length !== 3 || parts.some(isNaN)) return null;
+    const [y, m, d] = parts;
+    const today = new Date();
+    let age = today.getFullYear() - y;
+    if (today.getMonth() + 1 < m || (today.getMonth() + 1 === m && today.getDate() < d)) {
+      age -= 1;
+    }
+    return age;
+  };
+
+  const applicantAge = calculateAge(dateOfBirth);
+  const hasUnderageDob = dateOfBirth.trim() !== "" && (applicantAge === null || applicantAge < 18);
+
+  // Latest selectable birth date = today minus 18 years.
+  const adultCutoffDate = (() => {
+    const d = new Date();
+    d.setFullYear(d.getFullYear() - 18);
+    const mm = String(d.getMonth() + 1).padStart(2, "0");
+    const dd = String(d.getDate()).padStart(2, "0");
+    return `${d.getFullYear()}-${mm}-${dd}`;
+  })();
+
   const getMissingFields = (): string[] => {
     const missing: string[] = [];
     if (!fullName.trim()) missing.push("Full Name");
     if (!phone.trim()) missing.push("Phone Number");
     if (!country.trim()) missing.push("Country");
     if (!dateOfBirth.trim()) missing.push("Date of Birth");
+    else if (hasUnderageDob) missing.push("Age 18+ Required");
     if (!address.trim()) missing.push("Address");
     if (!email.trim()) missing.push("Email");
     if (!selectedPlanId) missing.push("Plan Selection");
@@ -173,7 +200,7 @@ export default function UserApplicationForm() {
     return missing;
   };
 
-  const isComplete = progress === 100;
+  const isComplete = progress === 100 && !hasUnderageDob;
 
   const getStatusLabel = (): string => {
     if (application?.status === "card_issued") return "Card Issued";
@@ -592,14 +619,26 @@ export default function UserApplicationForm() {
 
           {/* Date of Birth */}
           <div className="space-y-2">
-            <label className="text-[10px] font-black text-white/30 uppercase tracking-[3px]">Date of Birth *</label>
+            <label className="text-[10px] font-black text-white/30 uppercase tracking-[3px]">Date of Birth * (18+ only)</label>
             <input
               type="date"
               value={dateOfBirth}
               onChange={e => setDateOfBirth(e.target.value)}
-              max={new Date().toISOString().split("T")[0]}
-              className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-xs font-bold outline-none focus:border-amber-500/60 [color-scheme:dark]"
+              max={adultCutoffDate}
+              className={`w-full bg-white/5 border rounded-xl px-4 py-3 text-xs font-bold outline-none focus:border-amber-500/60 [color-scheme:dark] ${hasUnderageDob ? "border-red-500/60" : "border-white/10"}`}
             />
+            {dateOfBirth.trim() !== "" && applicantAge !== null && applicantAge >= 0 && (
+              <p className={`text-[11px] font-bold ${hasUnderageDob ? "text-red-400" : "text-emerald-400"}`}>
+                Age: {applicantAge} years{hasUnderageDob ? " — must be 18 or older" : ""}
+              </p>
+            )}
+            {hasUnderageDob && (
+              <div className="bg-red-500/10 border border-red-500/30 rounded-xl px-4 py-3">
+                <p className="text-xs font-bold text-red-400">
+                  You must be 18 years or older to apply. Children are not eligible for this card.
+                </p>
+              </div>
+            )}
           </div>
 
           {/* Address */}

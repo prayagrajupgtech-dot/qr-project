@@ -63,6 +63,23 @@ export default async (request: Request) => {
         }
       }
 
+      // Age check - only 18 years or older can apply.
+      if (dateOfBirth) {
+        const parts = dateOfBirth.split("-").map(Number);
+        if (parts.length !== 3 || parts.some(n => isNaN(n))) {
+          return jsonResponse({ error: "Invalid date of birth." }, 400);
+        }
+        const [y, m, d] = parts;
+        const today = new Date();
+        let age = today.getFullYear() - y;
+        if (today.getMonth() + 1 < m || (today.getMonth() + 1 === m && today.getDate() < d)) {
+          age -= 1;
+        }
+        if (age < 18) {
+          return jsonResponse({ error: "You must be 18 years or older to apply. Children are not eligible for this card." }, 400);
+        }
+      }
+
       // Progress calculation - weights MUST match frontend
       let completionPercentage = 0;
       if (fullName) completionPercentage += 15;
