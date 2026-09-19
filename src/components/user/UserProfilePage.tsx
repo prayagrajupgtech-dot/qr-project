@@ -12,6 +12,7 @@ interface UserProfileProps {
     phone?: string;
     country?: string;
     country_code?: string;
+    photo_url?: string;
     status?: string;
     created_at?: string;
   } | null;
@@ -96,6 +97,25 @@ export default function UserProfilePage({ user, assignedPlan, cardsCount, onProf
   const [savingPassword, setSavingPassword] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const [loadingProfile, setLoadingProfile] = useState(false);
+
+  // Fallback: if parent dashboard data hasn't arrived (user is null),
+  // fetch the profile directly so name/email never stay empty.
+  useEffect(() => {
+    if (user?.id || loadingProfile) return;
+    const token = session?.access_token || localStorage.getItem("maurya_user_token") || "";
+    if (!token) return;
+    setLoadingProfile(true);
+    fetch("/api/user-profile", {
+      headers: { Authorization: `Bearer ${token}` }
+    })
+      .then(r => r.json())
+      .then(d => {
+        if (d.profile && onProfileUpdated) onProfileUpdated(d.profile);
+      })
+      .catch(() => {})
+      .finally(() => setLoadingProfile(false));
+  }, [user?.id, session?.access_token]);
 
   const card = `bg-white/5 border border-white/10 rounded-[2.5rem] p-6 sm:p-8 space-y-6`;
   const label = "text-[10px] font-black uppercase tracking-widest text-white/30";
@@ -243,10 +263,8 @@ export default function UserProfilePage({ user, assignedPlan, cardsCount, onProf
   const displayPhoto = editing
     ? editPhotoAction === "remove"
       ? null
-      : editPhoto
-    : user?.id
-      ? `/api/user-photo/${user.id}`
-      : null;
+      : editPhoto || user?.photo_url || null
+    : user?.photo_url || null;
 
   return (
     <div className="space-y-6 pb-20 sm:pb-0">

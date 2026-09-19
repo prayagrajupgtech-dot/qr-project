@@ -15,7 +15,7 @@ export default async (request: Request) => {
         const supabase = getSupabaseAdmin();
         const { data: profile, error } = await supabase
           .from("user_profiles")
-          .select("id, email, display_name, phone, country, country_code, status, created_at")
+          .select("id, email, display_name, phone, country, country_code, photo_url, status, created_at")
           .eq("id", authUser.userId)
           .maybeSingle();
 
@@ -32,6 +32,7 @@ export default async (request: Request) => {
             phone: profile?.phone || "",
             country: profile?.country || "",
             country_code: profile?.country_code || "",
+            photo_url: profile?.photo_url || "",
             status: profile?.status || "active",
             created_at: profile?.created_at || null
           }
@@ -98,11 +99,20 @@ export default async (request: Request) => {
 
       if (isSupabaseConfigured()) {
         const supabase = getSupabaseAdmin();
+        // Upsert: update if the row exists, insert if it doesn't.
+        // (Plain update + .single() fails when the user has no user_profiles row yet.)
         const { data, error } = await supabase
           .from("user_profiles")
-          .update(updates)
-          .eq("id", authUser.userId)
-          .select("id, email, display_name, phone, country, country_code, status, created_at")
+          .upsert(
+            {
+              id: authUser.userId,
+              email: authUser.email,
+              ...updates,
+              updated_at: new Date().toISOString()
+            },
+            { onConflict: "id" }
+          )
+          .select("id, email, display_name, phone, country, country_code, photo_url, status, created_at")
           .single();
 
         if (error) {
