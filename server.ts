@@ -62,6 +62,15 @@ function firstHeader(value: string | string[] | undefined): string {
 async function handleRequest(req: IncomingMessage, res: ServerResponse) {
   const url = req.url || "/";
 
+  // Force HTTPS redirect
+  const proto = firstHeader(req.headers["x-forwarded-proto"]) || "http";
+  const host = firstHeader(req.headers.host) || "";
+  if (proto === "http" && host && !host.includes("localhost")) {
+    res.writeHead(301, { Location: `https://${host}${url}` });
+    res.end();
+    return;
+  }
+
   // --- API routes ---
   const apiMatch = url.match(/^\/api\/([a-z-]+)/);
   if (apiMatch) {
