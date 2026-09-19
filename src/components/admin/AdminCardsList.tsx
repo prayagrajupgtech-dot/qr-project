@@ -199,9 +199,10 @@ export default function AdminCardsList() {
 
       {/* View / Print Modal */}
       {viewCard && (
-        <div className="fixed inset-0 z-[70] flex items-center justify-center p-4 bg-black/70 overflow-y-auto" onClick={() => setViewCard(null)}>
+        <div className="fixed inset-0 z-[70] overflow-y-auto bg-black/70 p-4" onClick={() => setViewCard(null)}>
+          <div className="min-h-full flex">
           <div
-            className={`w-full max-w-2xl rounded-[2rem] border p-6 sm:p-8 my-8 ${isDark ? "bg-slate-950 border-white/10" : "bg-white border-[#bbf7d0]"}`}
+            className={`m-auto w-full max-w-2xl rounded-[2rem] border p-6 sm:p-8 ${isDark ? "bg-slate-950 border-white/10" : "bg-white border-[#bbf7d0]"}`}
             onClick={e => e.stopPropagation()}
           >
             <div className="flex items-center justify-between mb-6 no-print">
@@ -219,7 +220,8 @@ export default function AdminCardsList() {
 
             {/* Printable card area - front + back */}
             <div id="admin-card-print" className="flex flex-col items-center gap-6">
-              <div className="w-full max-w-[500px]">
+              <div className="w-full max-w-[500px] overflow-x-auto">
+                <div className="min-w-[500px]">
                 <IDCard
                   data={{
                     name: viewCard.name,
@@ -232,9 +234,12 @@ export default function AdminCardsList() {
                     address: viewCard.address
                   }}
                 />
+                </div>
               </div>
-              <div className="w-full max-w-[500px]">
+              <div className="w-full max-w-[500px] overflow-x-auto">
+                <div className="min-w-[500px]">
                 <IDCardBack cardNumber={viewCard.card_number} subscriptionUrl={`${getPublicBaseUrl()}#/home`} />
+                </div>
               </div>
               <div className="bg-white p-4 rounded-2xl">
                 <QRCodeCanvas value={`${getPublicBaseUrl()}#/verify/${viewCard.card_number}`} size={140} />
@@ -279,6 +284,7 @@ export default function AdminCardsList() {
                 Close
               </button>
             </div>
+          </div>
           </div>
         </div>
       )}
