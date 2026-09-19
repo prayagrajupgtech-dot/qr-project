@@ -258,11 +258,15 @@ html.light [style*="color: #166534"] {
   #admin-card-print > div {
     page-break-inside: avoid;
     break-inside: avoid;
+    margin-left: auto;
+    margin-right: auto;
   }
-  /* Front card -> page 1, back card -> page 2, QR -> page 3 */
+  /* Back card ends page 1 -> QR goes on page 2. Front stays with back. */
   #admin-card-print > div.print-page {
     break-after: page;
     page-break-after: always;
+    margin-left: auto;
+    margin-right: auto;
   }
   #admin-card-print > div.print-page:last-child {
     break-after: auto;
