@@ -219,3 +219,26 @@ html.light .id-card-green,
 html.light [style*="color: #166534"] {
   color: #166534 !important;
 }
+
+/* ========= PRINT: only the admin card preview prints ========= */
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  #admin-card-print,
+  #admin-card-print * {
+    visibility: visible;
+  }
+  #admin-card-print {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    margin: 0 auto;
+    padding: 16px;
+    background: #fff;
+  }
+  .no-print {
+    display: none !important;
+  }
+}

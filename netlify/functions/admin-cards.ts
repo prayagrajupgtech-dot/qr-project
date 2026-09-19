@@ -78,7 +78,7 @@ export default async (request: Request) => {
         const supabase = getSupabaseAdmin();
         const { data: cards, error } = await supabase
           .from("id_cards")
-          .select("id, card_number, name, phone, date_of_birth, address, photo_url, user_id, plan_id, status, created_at")
+          .select("id, card_number, name, phone, parent_phone, date_of_birth, address, photo_url, user_id, plan_id, status, created_at")
           .order("created_at", { ascending: false });
 
         if (error) {
