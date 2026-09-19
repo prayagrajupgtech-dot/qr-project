@@ -92,6 +92,57 @@ export default function AdminCardsList() {
     );
   });
 
+  // Print in a dedicated window: only front card (page 1) + back card (page 1)
+  // + QR (page 2). No admin UI, no cut content.
+  const handlePrint = () => {
+    const node = document.getElementById("admin-card-print");
+    if (!node) {
+      window.print();
+      return;
+    }
+    const clone = node.cloneNode(true) as HTMLElement;
+    // Canvas (QR) does not survive document.write - convert to image first.
+    const origCanvases = node.querySelectorAll("canvas");
+    const cloneCanvases = clone.querySelectorAll("canvas");
+    cloneCanvases.forEach((c, i) => {
+      const orig = origCanvases[i] as HTMLCanvasElement | undefined;
+      if (!orig) return;
+      try {
+        const img = document.createElement("img");
+        img.src = orig.toDataURL("image/png");
+        img.width = orig.width;
+        img.height = orig.height;
+        img.style.width = `${orig.width}px`;
+        img.style.height = `${orig.height}px`;
+        c.replaceWith(img);
+      } catch {
+        /* keep canvas as-is on failure */
+      }
+    });
+    // Our Tailwind CSS is inlined in <style> tags (single-file build) - reuse it.
+    const styles = Array.from(document.querySelectorAll("style")).map(s => s.outerHTML).join("\n");
+    const printCss = `<style>
+      body { background: #fff !important; margin: 0; padding: 16px; }
+      #admin-card-print { display: flex; flex-direction: column; align-items: center; gap: 24px; }
+      #admin-card-print > div { margin: 0 auto; break-inside: avoid; page-break-inside: avoid; }
+      #admin-card-print .overflow-x-auto { overflow: visible !important; }
+      #admin-card-print > div.print-page { break-after: page; page-break-after: always; }
+      #admin-card-print > div.print-page:last-child { break-after: auto; page-break-after: auto; }
+      * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+    </style>`;
+    const w = window.open("", "_blank", "width=900,height=700");
+    if (!w) {
+      window.print();
+      return;
+    }
+    w.document.write(`<!doctype html><html><head><title>ID Card Print - ${viewCard?.card_number || ""}</title>${styles}${printCss}</head><body>${clone.outerHTML}</body></html>`);
+    w.document.close();
+    w.focus();
+    setTimeout(() => {
+      w.print();
+    }, 600);
+  };
+
   const cardStyle = isDark ? "bg-white/5 border-white/10" : "bg-white border-[#bbf7d0]";
   const textMain = isDark ? "text-white" : "text-[#064e3b]";
   const textSub = isDark ? "text-white/40" : "text-[#047857]";
@@ -272,7 +323,7 @@ export default function AdminCardsList() {
 
             <div className="flex gap-2 mt-6 no-print">
               <button
-                onClick={() => window.print()}
+                onClick={handlePrint}
                 className="flex-1 bg-amber-500 text-black py-3 rounded-xl font-black uppercase text-xs tracking-widest hover:bg-amber-400 transition-all"
               >
                 🖨️ Print Card
