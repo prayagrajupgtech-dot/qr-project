@@ -4,15 +4,15 @@
 html.light {
   --lm-bg: #f0fdf4;
   --lm-bg-card: #ffffff;
-  --lm-bg-subtle: #f0fdf4;
-  --lm-bg-input: #f0fdf4;
-  --lm-border: #bbf7d0;
-  --lm-border-subtle: #dcfce7;
-  --lm-text: #064e3b;
-  --lm-text-secondary: #047857;
-  --lm-text-muted: #059669;
-  --lm-text-dim: #34d399;
-  --lm-accent: #059669;
+  --lm-bg-subtle: #ecfdf5;
+  --lm-bg-input: #ecfdf5;
+  --lm-border: #86efac;
+  --lm-border-subtle: #bbf7d0;
+  --lm-text: #052e16;
+  --lm-text-secondary: #064e3b;
+  --lm-text-muted: #065f46;
+  --lm-text-dim: #047857;
+  --lm-accent: #065f46;
   --lm-accent-bg: #d1fae5;
   --lm-hover: #dcfce7;
 }
@@ -70,60 +70,63 @@ html.light [class*="border-white/5"] {
   border-color: var(--lm-border-subtle) !important;
 }
 
-/* text-white/20 → green dim */
+/* text-white/20 → dark green */
 html.light [class*="text-white/20"] {
-  color: var(--lm-text-dim) !important;
+  color: #065f46 !important;
 }
 
-/* text-white/30 → green muted */
+/* text-white/30 → dark green */
 html.light [class*="text-white/30"] {
-  color: var(--lm-text-muted) !important;
+  color: #065f46 !important;
 }
 
-/* text-white/40 → green secondary */
+/* text-white/40 → dark green */
 html.light [class*="text-white/40"] {
-  color: var(--lm-text-secondary) !important;
+  color: #064e3b !important;
 }
 
-/* text-white/50 → green text */
+/* text-white/50 → dark green */
 html.light [class*="text-white/50"] {
-  color: var(--lm-text-secondary) !important;
+  color: #064e3b !important;
 }
 
-/* text-white/60 → green text */
+/* text-white/60 → darkest green */
 html.light [class*="text-white/60"] {
-  color: var(--lm-text) !important;
+  color: #052e16 !important;
 }
 
-/* text-white/70 → green text */
+/* text-white/70 → darkest green */
 html.light [class*="text-white/70"] {
-  color: var(--lm-text) !important;
+  color: #052e16 !important;
 }
 
-/* text-white → green text */
+/* text-white → darkest green */
 html.light [class*="text-white"] {
-  color: var(--lm-text) !important;
+  color: #052e16 !important;
 }
 
-/* text-amber-400/500 → green accent in light mode */
+/* text-amber colors → dark green accent in light mode */
 html.light [class*="text-amber-400"],
 html.light [class*="text-amber-500"] {
-  color: var(--lm-accent) !important;
+  color: #065f46 !important;
 }
+html.light .text-amber-400 { color: #065f46 !important; }
+html.light .text-amber-500 { color: #065f46 !important; }
+html.light .text-amber-600 { color: #065f46 !important; }
 
-/* bg-amber-500 → green accent bg */
+/* bg-amber-500 → dark green accent bg */
 html.light [class*="bg-amber-500"] {
-  background-color: #059669 !important;
+  background-color: #065f46 !important;
 }
 
 /* bg-amber-500/10 */
 html.light [class*="bg-amber-500/10"] {
-  background-color: rgba(5, 150, 105, 0.1) !important;
+  background-color: rgba(6, 95, 70, 0.12) !important;
 }
 
 /* bg-emerald-500/10 */
 html.light [class*="bg-emerald-500/10"] {
-  background-color: rgba(5, 150, 105, 0.1) !important;
+  background-color: rgba(6, 95, 70, 0.12) !important;
 }
 
 /* bg-red-500/10 */
@@ -131,19 +134,9 @@ html.light [class*="bg-red-500/10"] {
   background-color: rgba(220, 38, 38, 0.08) !important;
 }
 
-/* text-amber-400 */
-html.light .text-amber-400 {
-  color: #059669 !important;
-}
-
-/* text-amber-500 */
-html.light .text-amber-500 {
-  color: #059669 !important;
-}
-
 /* text-emerald-400 */
 html.light .text-emerald-400 {
-  color: #059669 !important;
+  color: #065f46 !important;
 }
 
 /* text-red-400 */
@@ -173,10 +166,19 @@ html.light textarea:focus {
   box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.15) !important;
 }
 
+/* Summary card value colors → dark variants in light mode */
+html.light .text-blue-400 { color: #1e40af !important; }
+html.light .text-green-400 { color: #166534 !important; }
+html.light .text-purple-400 { color: #6b21a8 !important; }
+html.light .text-cyan-400 { color: #155e75 !important; }
+html.light .text-orange-400 { color: #9a3412 !important; }
+html.light .text-yellow-400 { color: #854d0e !important; }
+html.light .text-pink-400 { color: #9d174d !important; }
+
 /* Buttons with amber bg */
 html.light button[class*="bg-amber-500"],
 html.light a[class*="bg-amber-500"] {
-  background-color: #059669 !important;
+  background-color: #065f46 !important;
 }
 
 /* Buttons with emerald bg */

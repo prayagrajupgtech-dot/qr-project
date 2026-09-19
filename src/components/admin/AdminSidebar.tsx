@@ -35,7 +35,7 @@ export default function AdminSidebar({ currentTab, onNavigate, onLogout }: Admin
   const isDark = theme === "dark";
 
   return (
-    <aside className={`w-64 border-r flex flex-col justify-between shrink-0 min-h-screen p-6 ${isDark ? "bg-slate-950 border-white/10" : "bg-gray-900 border-gray-700"}`}>
+    <aside className={`w-64 border-r flex flex-col justify-between shrink-0 min-h-screen p-6 ${isDark ? "bg-slate-950 border-white/10" : "bg-[#052e16] border-[#065f46]"}`}>
       <div>
         <div className="flex items-center gap-3 mb-8">
           <div className="w-10 h-10 bg-amber-500 rounded-xl flex items-center justify-center font-black text-black shadow-lg shadow-amber-500/20 text-lg">
@@ -43,7 +43,7 @@ export default function AdminSidebar({ currentTab, onNavigate, onLogout }: Admin
           </div>
           <div>
             <h1 className="font-black text-sm uppercase tracking-wider text-white">Admin Panel</h1>
-            <p className="text-[10px] text-amber-500 font-bold uppercase tracking-widest">Maurya System</p>
+            <p className="text-[10px] text-amber-400 font-bold uppercase tracking-widest">Maurya System</p>
           </div>
         </div>
 
