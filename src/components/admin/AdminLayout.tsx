@@ -28,7 +28,7 @@ export default function AdminLayout({
       <AdminSidebar currentTab={currentTab} onNavigate={onNavigate} onLogout={onLogout} />
       <div className="flex-1 flex flex-col min-w-0">
         <AdminHeader title={title} subtitle={subtitle} />
-        <main className="flex-1 p-8 overflow-y-auto">{children}</main>
+        <main className="flex-1 p-4 sm:p-6 lg:p-8 overflow-y-auto">{children}</main>
       </div>
     </div>
   );

@@ -10,10 +10,10 @@ export default function AdminHeader({ title, subtitle }: AdminHeaderProps) {
   const isDark = theme === "dark";
 
   return (
-    <header className={`border-b px-8 py-5 flex items-center justify-between sticky top-0 z-40 ${isDark ? "border-white/10 bg-slate-900/50" : "border-[#bbf7d0] bg-[#f0fdf4]/80"} backdrop-blur-md`}>
-      <div>
-        <h1 className={`text-xl font-black uppercase tracking-tight ${isDark ? "text-white" : "text-[#064e3b]"}`}>{title}</h1>
-        {subtitle && <p className={`text-xs font-semibold ${isDark ? "text-white/40" : "text-[#059669]"}`}>{subtitle}</p>}
+    <header className={`border-b px-4 sm:px-8 py-4 sm:py-5 flex items-center justify-between sticky top-0 z-30 ${isDark ? "border-white/10 bg-slate-900/50" : "border-[#bbf7d0] bg-[#f0fdf4]/80"} backdrop-blur-md`}>
+      <div className="pl-12 lg:pl-0 min-w-0">
+        <h1 className={`text-lg sm:text-xl font-black uppercase tracking-tight ${isDark ? "text-white" : "text-[#064e3b]"} truncate`}>{title}</h1>
+        {subtitle && <p className={`text-[10px] sm:text-xs font-semibold ${isDark ? "text-white/40" : "text-[#059669]"} truncate`}>{subtitle}</p>}
       </div>
       <div className="flex items-center gap-4">
         <button

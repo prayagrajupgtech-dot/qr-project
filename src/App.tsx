@@ -410,25 +410,25 @@ function AppInner() {
         }}
       />
 
-      <main className="max-w-4xl mx-auto p-6 sm:p-10">
+      <main className="max-w-4xl mx-auto p-4 sm:p-6 lg:p-10 pb-24 sm:pb-10">
         {userTab === "home" && (
-          <div className={`${theme === "dark" ? "bg-white/5 border-white/10" : "bg-[#f0fdf4] border-[#bbf7d0]"} border rounded-[2.5rem] p-10 text-center space-y-6`}>
-            <span className="text-xs font-black uppercase tracking-[4px] text-amber-500">Welcome, {userData.profile?.display_name || "User"}</span>
-            <h1 className="text-4xl font-black uppercase tracking-tight">Your Digital ID Card</h1>
+          <div className={`${theme === "dark" ? "bg-white/5 border-white/10" : "bg-[#f0fdf4] border-[#bbf7d0]"} border rounded-2xl sm:rounded-[2.5rem] p-6 sm:p-10 text-center space-y-6`}>
+            <span className="text-[10px] sm:text-xs font-black uppercase tracking-[4px] text-amber-500">Welcome, {userData.profile?.display_name || "User"}</span>
+            <h1 className="text-2xl sm:text-4xl font-black uppercase tracking-tight">Your Digital ID Card</h1>
 
             <div className="pt-4 space-y-4">
               {userData.cards.length > 0 ? (
                 <div className="space-y-4">
-                  <div className={`${theme === "dark" ? "bg-black/30 border-white/10" : "bg-[#f0fdf4] border-[#bbf7d0]"} border px-6 py-4 rounded-2xl inline-block`}>
+                  <div className={`${theme === "dark" ? "bg-black/30 border-white/10" : "bg-[#f0fdf4] border-[#bbf7d0]"} border px-4 sm:px-6 py-3 sm:py-4 rounded-2xl inline-block`}>
                     <p className={`text-[10px] font-black ${theme === "dark" ? "text-white/30" : "text-[#059669]"} uppercase tracking-widest`}>Card Status</p>
-                    <span className="inline-block mt-1 px-3 py-1 bg-emerald-500/10 text-emerald-400 font-black rounded-lg uppercase text-sm">
+                    <span className="inline-block mt-1 px-3 py-1 bg-emerald-500/10 text-emerald-400 font-black rounded-lg uppercase text-xs sm:text-sm">
                       Active
                     </span>
                   </div>
 
-                  <div className={`${theme === "dark" ? "bg-black/30 border-white/10" : "bg-[#f0fdf4] border-[#bbf7d0]"} border px-6 py-4 rounded-2xl inline-block`}>
+                  <div className={`${theme === "dark" ? "bg-black/30 border-white/10" : "bg-[#f0fdf4] border-[#bbf7d0]"} border px-4 sm:px-6 py-3 sm:py-4 rounded-2xl inline-block`}>
                     <p className="text-[10px] font-black text-amber-500 uppercase tracking-widest">Current Plan</p>
-                    <p className={`font-black ${theme === "dark" ? "text-white" : "text-[#064e3b]"} text-lg mt-1`}>{userData.plan?.name || "Basic"}</p>
+                    <p className={`font-black ${theme === "dark" ? "text-white" : "text-[#064e3b]"} text-base sm:text-lg mt-1`}>{userData.plan?.name || "Basic"}</p>
                     <p className={`text-xs ${theme === "dark" ? "text-white/40" : "text-[#047857]"} font-semibold`}>
                       {userData.plan?.card_limit === -1 ? "Unlimited" : `${userData.plan?.card_limit || 100} Cards Limit`}
                     </p>
@@ -436,7 +436,7 @@ function AppInner() {
                 </div>
               ) : userData.application ? (
                 <div className="space-y-4">
-                  <div className={`${theme === "dark" ? "bg-black/30 border-white/10" : "bg-[#f0fdf4] border-[#bbf7d0]"} border px-6 py-4 rounded-2xl inline-block`}>
+                  <div className={`${theme === "dark" ? "bg-black/30 border-white/10" : "bg-[#f0fdf4] border-[#bbf7d0]"} border px-4 sm:px-6 py-3 sm:py-4 rounded-2xl inline-block`}>
                     <p className={`text-[10px] font-black ${theme === "dark" ? "text-white/30" : "text-[#059669]"} uppercase tracking-widest`}>Application</p>
                     <div className="mt-2">
                       <div className="flex items-center gap-2 mb-1">
@@ -456,7 +456,7 @@ function AppInner() {
                   </div>
 
                   {userData.application.status !== "submitted" && userData.application.status !== "card_issued" && (
-                    <div className={`${theme === "dark" ? "bg-black/30 border-white/10" : "bg-[#f0fdf4] border-[#bbf7d0]"} border px-8 py-6 rounded-2xl max-w-md mx-auto space-y-3`}>
+                    <div className={`${theme === "dark" ? "bg-black/30 border-white/10" : "bg-[#f0fdf4] border-[#bbf7d0]"} border px-5 sm:px-8 py-4 sm:py-6 rounded-2xl max-w-md mx-auto space-y-3`}>
                       <p className={`text-sm ${theme === "dark" ? "text-white/50" : "text-[#047857]"}`}>
                         {userData.application.completion_percentage === 100
                           ? "Your application is complete. Submit it to proceed."
@@ -466,8 +466,8 @@ function AppInner() {
                   )}
                 </div>
               ) : (
-                <div className={`${theme === "dark" ? "bg-black/30 border-white/10" : "bg-[#f0fdf4] border-[#bbf7d0]"} border px-8 py-6 rounded-2xl max-w-md mx-auto space-y-3`}>
-                  <p className={`text-sm ${theme === "dark" ? "text-white/50" : "text-[#047857]"}`}>
+                <div className={`${theme === "dark" ? "bg-black/30 border-white/10" : "bg-[#f0fdf4] border-[#bbf7d0]"} border px-5 sm:px-8 py-4 sm:py-6 rounded-2xl max-w-md mx-auto space-y-3`}>
+                  <p className={`text-xs sm:text-sm ${theme === "dark" ? "text-white/50" : "text-[#047857]"}`}>
                     No card issued yet. Create your card application to get started.
                   </p>
                 </div>
@@ -475,7 +475,7 @@ function AppInner() {
 
               <button
                 onClick={() => setUserTab(userData.cards.length > 0 ? "my-card" : "apply")}
-                className="bg-amber-500 text-black px-8 py-4 rounded-2xl font-black uppercase text-xs tracking-widest hover:bg-amber-400 transition-all shadow-xl shadow-amber-500/20"
+                className="bg-amber-500 text-black px-6 sm:px-8 py-3 sm:py-4 rounded-2xl font-black uppercase text-xs tracking-widest hover:bg-amber-400 transition-all shadow-xl shadow-amber-500/20"
               >
                 {userData.cards.length > 0 ? "View My Card" : userData.application?.status === "submitted" ? "Check Application Status" : "Create ID Card"}
               </button>
@@ -486,7 +486,7 @@ function AppInner() {
         {userTab === "my-card" && <UserMyCardPage />}
         {userTab === "apply" && <UserApplicationForm />}
         {userTab === "plans" && (
-          <div className={`${theme === "dark" ? "bg-white/5 border-white/10" : "bg-[#f0fdf4] border-[#bbf7d0]"} border rounded-[2.5rem] p-10`}>
+          <div className={`${theme === "dark" ? "bg-white/5 border-white/10" : "bg-[#f0fdf4] border-[#bbf7d0]"} border rounded-2xl sm:rounded-[2.5rem] p-5 sm:p-10 pb-24 sm:pb-10`}>
             <UserApplicationForm />
           </div>
         )}

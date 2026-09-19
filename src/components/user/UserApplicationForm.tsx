@@ -437,22 +437,22 @@ export default function UserApplicationForm() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6 pb-20 sm:pb-0">
       {error && (
-        <div className="bg-red-500/10 border border-red-500/30 px-5 py-3 rounded-xl">
+        <div className="bg-red-500/10 border border-red-500/30 px-4 py-3 rounded-xl">
           <p className="text-xs font-bold text-red-400">{error}</p>
         </div>
       )}
       {success && (
-        <div className="bg-emerald-500/10 border border-emerald-500/30 px-5 py-3 rounded-xl">
+        <div className="bg-emerald-500/10 border border-emerald-500/30 px-4 py-3 rounded-xl">
           <p className="text-xs font-bold text-emerald-400">{success}</p>
         </div>
       )}
 
       {/* Step 1: Plan Selection */}
-      <div className="border border-white/10 bg-white/5 rounded-[2.5rem] p-8">
+      <div className="border border-white/10 bg-white/5 rounded-2xl sm:rounded-[2.5rem] p-5 sm:p-8">
         <span className="text-[10px] font-black text-amber-500 uppercase tracking-[5px]">Step 1</span>
-        <h2 className="mt-2 text-2xl font-black uppercase tracking-tight">Select Your Plan</h2>
+        <h2 className="mt-2 text-xl sm:text-2xl font-black uppercase tracking-tight">Select Your Plan</h2>
 
         {selectedPlan && (
           <div className="mt-4 bg-amber-500/10 border border-amber-500/20 rounded-2xl p-4 flex items-center justify-between">
@@ -507,9 +507,9 @@ export default function UserApplicationForm() {
       </div>
 
       {/* Step 2: Personal Information */}
-      <div className="border border-white/10 bg-white/5 rounded-[2.5rem] p-8">
+      <div className="border border-white/10 bg-white/5 rounded-2xl sm:rounded-[2.5rem] p-5 sm:p-8">
         <span className="text-[10px] font-black text-amber-500 uppercase tracking-[5px]">Step 2</span>
-        <h2 className="mt-2 text-2xl font-black uppercase tracking-tight">Personal Information</h2>
+        <h2 className="mt-2 text-xl sm:text-2xl font-black uppercase tracking-tight">Personal Information</h2>
 
         <div className="mt-6 space-y-5">
           {/* Full Name */}
@@ -653,9 +653,9 @@ export default function UserApplicationForm() {
       </div>
 
       {/* Step 3: Progress & Actions */}
-      <div className="border border-white/10 bg-white/5 rounded-[2.5rem] p-8">
+      <div className="border border-white/10 bg-white/5 rounded-2xl sm:rounded-[2.5rem] p-5 sm:p-8">
         <span className="text-[10px] font-black text-amber-500 uppercase tracking-[5px]">Step 3</span>
-        <h2 className="mt-2 text-2xl font-black uppercase tracking-tight">Progress</h2>
+        <h2 className="mt-2 text-xl sm:text-2xl font-black uppercase tracking-tight">Progress</h2>
 
         <div className="mt-6 space-y-4">
           {/* Progress bar */}
