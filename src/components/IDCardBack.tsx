@@ -60,12 +60,23 @@ const IDCardBack = forwardRef<HTMLDivElement, IDCardBackProps>(({ cardNumber, su
         <p className="text-[16px] font-black" style={{ color: "#dcfce7" }}>FIRST 30 DAYS FREE</p>
         <p className="text-[10px] font-bold mt-1" style={{ color: "#166534" }}>THEN INR 99 / MONTH</p>
 
-        <div className="mt-4">
+        <div className="mt-3">
           <p className="text-[7px] font-bold uppercase tracking-[2px] mb-1" style={{ color: "rgba(220, 252, 231, 0.4)" }}>
             Open this URL
           </p>
           <p className="text-[8px] font-bold break-all leading-tight" style={{ color: "rgba(220, 252, 231, 0.8)" }}>
             {subscriptionUrl}
+          </p>
+        </div>
+
+        <div className="mt-3 flex items-center gap-1.5">
+          <div className="w-4 h-4 rounded-full flex items-center justify-center shrink-0" style={{ backgroundColor: "rgba(22, 101, 52, 0.5)" }}>
+            <svg viewBox="0 0 24 24" className="w-2.5 h-2.5" fill="currentColor" style={{ color: "#dcfce7" }}>
+              <path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z" />
+            </svg>
+          </div>
+          <p className="text-[8px] font-black" style={{ color: "#166534" }}>
+            HELPLINE: 9616494204
           </p>
         </div>
       </div>
