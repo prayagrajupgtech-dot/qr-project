@@ -60,7 +60,9 @@ export default async (request: Request) => {
       const country = typeof body.country === "string" ? body.country.trim() : "";
       const country_code = typeof body.country_code === "string" ? body.country_code.trim() : "";
       const phone = typeof body.phone === "string" ? body.phone.trim() : "";
-      const photo_url = typeof body.photo_url === "string" ? body.photo_url.trim() : "";
+      // Accept both `photo_url` (current) and legacy `photo` key from older clients.
+      const rawPhoto = typeof body.photo_url === "string" ? body.photo_url : typeof body.photo === "string" ? body.photo : "";
+      const photo_url = rawPhoto.trim();
 
       if (!display_name) {
         return jsonResponse({ error: "Display name is required." }, 400);
@@ -76,8 +78,8 @@ export default async (request: Request) => {
 
       if (photo_url) {
         const sizeInBytes = Math.ceil((photo_url.length * 3) / 4);
-        if (sizeInBytes > 500 * 1024) {
-          return jsonResponse({ error: "Photo must be smaller than 500KB." }, 400);
+        if (sizeInBytes > 5 * 1024 * 1024) {
+          return jsonResponse({ error: "Photo must be smaller than 5MB." }, 400);
         }
       }
 
@@ -90,7 +92,7 @@ export default async (request: Request) => {
 
       if (photo_url) {
         updates.photo_url = photo_url;
-      } else if (body.photo_url === null || body.photo_url === "") {
+      } else if (body.photo_url === null || body.photo_url === "" || body.photo === null || body.photo === "") {
         updates.photo_url = "";
       }
 

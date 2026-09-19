@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { countries } from "../../utils/countries";
+import { useAuth } from "../../contexts/AuthContext";
 
 interface Plan {
   id: string;
@@ -56,6 +57,7 @@ function loadRazorpayCheckout(): Promise<boolean> {
 }
 
 export default function UserApplicationForm() {
+  const { session } = useAuth();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -78,7 +80,8 @@ export default function UserApplicationForm() {
   const [success, setSuccess] = useState("");
 
   const getAuthHeaders = () => {
-    const token = localStorage.getItem("maurya_user_token") || "";
+    // Prefer the live Supabase session token (auto-refreshed); fall back to stored token.
+    const token = session?.access_token || localStorage.getItem("maurya_user_token") || "";
     return { "Content-Type": "application/json", Authorization: `Bearer ${token}` };
   };
 

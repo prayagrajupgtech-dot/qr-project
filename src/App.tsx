@@ -100,6 +100,21 @@ function AppInner() {
   const [userTab, setUserTab] = useState<"home" | "my-card" | "apply" | "plans" | "profile">("home");
   const [userBlockedMessage, setUserBlockedMessage] = useState("");
 
+  // Keep userTab in sync with the URL hash so tabs (incl. Profile) survive reload/back button
+  const syncUserTabFromHash = (hash: string) => {
+    if (hash === "#/my-card") setUserTab("my-card");
+    else if (hash === "#/apply") setUserTab("apply");
+    else if (hash === "#/plans") setUserTab("plans");
+    else if (hash === "#/profile") setUserTab("profile");
+    else if (hash === "#/home") setUserTab("home");
+  };
+
+  const handleUserTabChange = (tab: "home" | "my-card" | "apply" | "plans" | "profile") => {
+    setUserTab(tab);
+    const targetHash = `#/${tab === "home" ? "home" : tab}`;
+    if (window.location.hash !== targetHash) window.location.hash = targetHash;
+  };
+
   // Sync Hash & Route Guards
   useEffect(() => {
     let requestNumber = 0;
@@ -108,6 +123,7 @@ function AppInner() {
       const currentRequest = ++requestNumber;
       const hash = window.location.hash || "#/";
       setCurrentHash(hash);
+      syncUserTabFromHash(hash);
 
       // Check Verification routes - support both UUID and card_number
       if (hash.startsWith("#/verify/")) {
@@ -403,7 +419,7 @@ function AppInner() {
     <div className={`min-h-screen ${theme === "dark" ? "bg-[#020617] text-white selection:bg-amber-500/30" : "bg-[#f0fdf4] text-[#064e3b] selection:bg-emerald-500/30"}`}>
       <UserNavigation
         activeTab={userTab}
-        onTabChange={tab => setUserTab(tab)}
+        onTabChange={handleUserTabChange}
         onLogout={async () => {
           await signOut();
           window.location.hash = "#/";
@@ -474,7 +490,7 @@ function AppInner() {
               )}
 
               <button
-                onClick={() => setUserTab(userData.cards.length > 0 ? "my-card" : "apply")}
+                onClick={() => handleUserTabChange(userData.cards.length > 0 ? "my-card" : "apply")}
                 className="bg-amber-500 text-black px-6 sm:px-8 py-3 sm:py-4 rounded-2xl font-black uppercase text-xs tracking-widest hover:bg-amber-400 transition-all shadow-xl shadow-amber-500/20"
               >
                 {userData.cards.length > 0 ? "View My Card" : userData.application?.status === "submitted" ? "Check Application Status" : "Create ID Card"}
@@ -495,6 +511,7 @@ function AppInner() {
             user={userData.profile}
             assignedPlan={userData.plan}
             cardsCount={userData.cards.length}
+            onProfileUpdated={profile => setUserData(prev => ({ ...prev, profile }))}
           />
         )}
       </main>

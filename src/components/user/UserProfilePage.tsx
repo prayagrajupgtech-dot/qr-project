@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useTheme } from "../../App";
+import { useAuth } from "../../contexts/AuthContext";
 import { countries } from "../../utils/countries";
 import PasswordStrength from "../PasswordStrength";
 
@@ -21,12 +22,8 @@ interface UserProfileProps {
     card_limit: number;
   } | null;
   cardsCount: number;
+  onProfileUpdated?: (profile: NonNullable<UserProfileProps["user"]>) => void;
 }
-
-const getAuthHeaders = () => {
-  const token = localStorage.getItem("maurya_user_token") || "";
-  return { "Content-Type": "application/json", Authorization: `Bearer ${token}` };
-};
 
 const ACCEPTED_IMAGE_TYPES = ["image/png", "image/jpeg", "image/webp"];
 const MAX_IMAGE_SIZE = 5 * 1024 * 1024;
@@ -59,8 +56,14 @@ function formatDate(dateStr?: string): string {
   }
 }
 
-export default function UserProfilePage({ user, assignedPlan, cardsCount }: UserProfileProps) {
+export default function UserProfilePage({ user, assignedPlan, cardsCount, onProfileUpdated }: UserProfileProps) {
   const { theme } = useTheme();
+  const { session } = useAuth();
+
+  const getAuthHeaders = () => {
+    const token = session?.access_token || localStorage.getItem("maurya_user_token") || "";
+    return { "Content-Type": "application/json", Authorization: `Bearer ${token}` };
+  };
 
   const [editing, setEditing] = useState(false);
   const [changingPassword, setChangingPassword] = useState(false);
@@ -71,6 +74,19 @@ export default function UserProfilePage({ user, assignedPlan, cardsCount }: User
   const [editPhone, setEditPhone] = useState(user?.phone || "");
   const [editPhoto, setEditPhoto] = useState<string | null>(null);
   const [editPhotoAction, setEditPhotoAction] = useState<"none" | "upload" | "remove">("none");
+
+  // Sync edit fields when the user profile loads/updates from parent.
+  // Without this, opening Profile before dashboard fetch finishes leaves the form empty forever.
+  useEffect(() => {
+    if (!editing) {
+      setEditName(user?.display_name || "");
+      setEditCountry(user?.country || "");
+      setEditCountryCode(user?.country_code || "");
+      setEditPhone(user?.phone || "");
+      setEditPhoto(null);
+      setEditPhotoAction("none");
+    }
+  }, [user?.id, user?.display_name, user?.phone, user?.country, user?.country_code]);
 
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
@@ -139,9 +155,9 @@ export default function UserProfilePage({ user, assignedPlan, cardsCount }: User
       };
 
       if (editPhotoAction === "upload" && editPhoto) {
-        body.photo = editPhoto;
+        body.photo_url = editPhoto;
       } else if (editPhotoAction === "remove") {
-        body.photo = "";
+        body.photo_url = "";
       }
 
       const res = await fetch("/api/user-profile", {
@@ -153,8 +169,13 @@ export default function UserProfilePage({ user, assignedPlan, cardsCount }: User
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Failed to update profile.");
 
+      if (data.profile && onProfileUpdated) {
+        onProfileUpdated(data.profile);
+      }
       setSuccess("Profile updated successfully.");
       setEditing(false);
+      setEditPhoto(null);
+      setEditPhotoAction("none");
       setTimeout(() => setSuccess(""), 3000);
     } catch (err: any) {
       setError(err.message || "Something went wrong.");
@@ -228,7 +249,7 @@ export default function UserProfilePage({ user, assignedPlan, cardsCount }: User
       : null;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 pb-20 sm:pb-0">
       {/* Status messages */}
       {error && (
         <div className="px-5 py-3 rounded-2xl text-sm font-semibold bg-red-500/10 border border-red-500/20 text-red-400">
