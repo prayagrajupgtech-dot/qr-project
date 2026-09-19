@@ -117,7 +117,7 @@ export default async (request: Request) => {
 
         if (error) {
           console.error("user-profile update error:", error);
-          return jsonResponse({ error: "Failed to update profile." }, 500);
+          return jsonResponse({ error: `Failed to update profile: ${error.message}` }, 500);
         }
 
         return jsonResponse({ profile: data });
