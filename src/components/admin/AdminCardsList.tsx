@@ -218,9 +218,9 @@ export default function AdminCardsList() {
               </button>
             </div>
 
-            {/* Printable card area - front + back */}
+            {/* Printable card area - front + back + QR, each on its own print page */}
             <div id="admin-card-print" className="flex flex-col items-center gap-6">
-              <div className="w-full max-w-[500px] overflow-x-auto">
+              <div className="print-page w-full max-w-[500px] overflow-x-auto">
                 <div className="min-w-[500px]">
                 <IDCard
                   data={{
@@ -236,12 +236,12 @@ export default function AdminCardsList() {
                 />
                 </div>
               </div>
-              <div className="w-full max-w-[500px] overflow-x-auto">
+              <div className="print-page w-full max-w-[500px] overflow-x-auto">
                 <div className="min-w-[500px]">
                 <IDCardBack cardNumber={viewCard.card_number} subscriptionUrl={`${getPublicBaseUrl()}#/home`} />
                 </div>
               </div>
-              <div className="bg-white p-4 rounded-2xl">
+              <div className="print-page bg-white p-4 rounded-2xl">
                 <QRCodeCanvas value={`${getPublicBaseUrl()}#/verify/${viewCard.card_number}`} size={140} />
               </div>
             </div>

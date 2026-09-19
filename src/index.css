@@ -244,6 +244,15 @@ html.light [style*="color: #166534"] {
     page-break-inside: avoid;
     break-inside: avoid;
   }
+  /* Front card -> page 1, back card -> page 2, QR -> page 3 */
+  #admin-card-print > div.print-page {
+    break-after: page;
+    page-break-after: always;
+  }
+  #admin-card-print > div.print-page:last-child {
+    break-after: auto;
+    page-break-after: auto;
+  }
   .no-print {
     display: none !important;
   }
