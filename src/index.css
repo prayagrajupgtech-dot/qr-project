@@ -1,1 +1,219 @@
 @import "tailwindcss";
+
+/* ========= LIGHT MODE GLOBAL OVERRIDES (Green Tint) ========= */
+html.light {
+  --lm-bg: #f0fdf4;
+  --lm-bg-card: #ffffff;
+  --lm-bg-subtle: #f0fdf4;
+  --lm-bg-input: #f0fdf4;
+  --lm-border: #bbf7d0;
+  --lm-border-subtle: #dcfce7;
+  --lm-text: #064e3b;
+  --lm-text-secondary: #047857;
+  --lm-text-muted: #059669;
+  --lm-text-dim: #34d399;
+  --lm-accent: #059669;
+  --lm-accent-bg: #d1fae5;
+  --lm-hover: #dcfce7;
+}
+
+html.light body,
+html.light #root {
+  background-color: var(--lm-bg) !important;
+  color: var(--lm-text) !important;
+}
+
+/* Override all bg-[#020617] and similar dark backgrounds */
+html.light [class*="bg-[#020617]"],
+html.light [class*="bg-[#0a1628]"],
+html.light [class*="bg-[#0d1117]"],
+html.light [class*="bg-[#0f172a]"],
+html.light [class*="bg-[#111827]"],
+html.light [class*="bg-slate-900"],
+html.light [class*="bg-slate-950"] {
+  background-color: var(--lm-bg-card) !important;
+  color: var(--lm-text) !important;
+  border-color: var(--lm-border) !important;
+}
+
+/* bg-white/5 → green tint */
+html.light [class*="bg-white/5"] {
+  background-color: rgba(16, 185, 129, 0.06) !important;
+  color: var(--lm-text) !important;
+  border-color: var(--lm-border) !important;
+}
+
+/* bg-white/8 → green tint */
+html.light [class*="bg-white/8"] {
+  background-color: rgba(16, 185, 129, 0.08) !important;
+}
+
+/* bg-white/10 → green tint */
+html.light [class*="bg-white/10"] {
+  background-color: rgba(16, 185, 129, 0.10) !important;
+}
+
+/* bg-black/30 → light green */
+html.light [class*="bg-black/30"],
+html.light [class*="bg-black/20"] {
+  background-color: var(--lm-bg-subtle) !important;
+  border-color: var(--lm-border) !important;
+}
+
+/* border-white/10 → green border */
+html.light [class*="border-white/10"] {
+  border-color: var(--lm-border) !important;
+}
+
+/* border-white/5 → green border */
+html.light [class*="border-white/5"] {
+  border-color: var(--lm-border-subtle) !important;
+}
+
+/* text-white/20 → green dim */
+html.light [class*="text-white/20"] {
+  color: var(--lm-text-dim) !important;
+}
+
+/* text-white/30 → green muted */
+html.light [class*="text-white/30"] {
+  color: var(--lm-text-muted) !important;
+}
+
+/* text-white/40 → green secondary */
+html.light [class*="text-white/40"] {
+  color: var(--lm-text-secondary) !important;
+}
+
+/* text-white/50 → green text */
+html.light [class*="text-white/50"] {
+  color: var(--lm-text-secondary) !important;
+}
+
+/* text-white/60 → green text */
+html.light [class*="text-white/60"] {
+  color: var(--lm-text) !important;
+}
+
+/* text-white/70 → green text */
+html.light [class*="text-white/70"] {
+  color: var(--lm-text) !important;
+}
+
+/* text-white → green text */
+html.light [class*="text-white"] {
+  color: var(--lm-text) !important;
+}
+
+/* text-amber-400/500 → green accent in light mode */
+html.light [class*="text-amber-400"],
+html.light [class*="text-amber-500"] {
+  color: var(--lm-accent) !important;
+}
+
+/* bg-amber-500 → green accent bg */
+html.light [class*="bg-amber-500"] {
+  background-color: #059669 !important;
+}
+
+/* bg-amber-500/10 */
+html.light [class*="bg-amber-500/10"] {
+  background-color: rgba(5, 150, 105, 0.1) !important;
+}
+
+/* bg-emerald-500/10 */
+html.light [class*="bg-emerald-500/10"] {
+  background-color: rgba(5, 150, 105, 0.1) !important;
+}
+
+/* bg-red-500/10 */
+html.light [class*="bg-red-500/10"] {
+  background-color: rgba(220, 38, 38, 0.08) !important;
+}
+
+/* text-amber-400 */
+html.light .text-amber-400 {
+  color: #059669 !important;
+}
+
+/* text-amber-500 */
+html.light .text-amber-500 {
+  color: #059669 !important;
+}
+
+/* text-emerald-400 */
+html.light .text-emerald-400 {
+  color: #059669 !important;
+}
+
+/* text-red-400 */
+html.light .text-red-400 {
+  color: #dc2626 !important;
+}
+
+/* All placeholders */
+html.light ::placeholder {
+  color: var(--lm-text-muted) !important;
+  opacity: 0.7;
+}
+
+/* Input, select, textarea base */
+html.light input,
+html.light select,
+html.light textarea {
+  background-color: var(--lm-bg-input) !important;
+  color: var(--lm-text) !important;
+  border-color: var(--lm-border) !important;
+}
+
+html.light input:focus,
+html.light select:focus,
+html.light textarea:focus {
+  border-color: var(--lm-accent) !important;
+  box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.15) !important;
+}
+
+/* Buttons with amber bg */
+html.light button[class*="bg-amber-500"],
+html.light a[class*="bg-amber-500"] {
+  background-color: #059669 !important;
+}
+
+/* Buttons with emerald bg */
+html.light button[class*="bg-emerald-500"],
+html.light a[class*="bg-emerald-500"] {
+  background-color: #059669 !important;
+}
+
+/* Navbar / Header */
+html.light nav,
+html.light header {
+  background-color: rgba(240, 253, 244, 0.95) !important;
+  border-color: var(--lm-border) !important;
+  color: var(--lm-text) !important;
+}
+
+/* Scrollbar for light mode */
+html.light ::-webkit-scrollbar {
+  width: 6px;
+}
+html.light ::-webkit-scrollbar-track {
+  background: var(--lm-bg);
+}
+html.light ::-webkit-scrollbar-thumb {
+  background: var(--lm-border);
+  border-radius: 3px;
+}
+
+/* Red geometric triangles on ID cards - keep red in light mode */
+html.light .id-card-red,
+html.light [class*="fill-"][class*="#dc2626"],
+html.light [class*="fill-red"] {
+  fill: #dc2626 !important;
+}
+
+/* Ensure green text on ID card stays green */
+html.light .id-card-green,
+html.light [style*="color: #166534"] {
+  color: #166534 !important;
+}

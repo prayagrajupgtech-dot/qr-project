@@ -64,10 +64,10 @@ export default function AdminDashboard({ onNavigate }: AdminDashboardProps) {
   }
 
   const isDark = theme === "dark";
-  const card = isDark ? "bg-white/5 border-white/10" : "bg-white border-gray-200";
-  const innerCard = isDark ? "bg-black/30 border-white/5" : "bg-gray-50 border-gray-200";
-  const textMain = isDark ? "text-white" : "text-gray-900";
-  const textSub = isDark ? "text-white/40" : "text-gray-500";
+  const card = isDark ? "bg-white/5 border-white/10" : "bg-[#f0fdf4] border-[#bbf7d0]";
+  const innerCard = isDark ? "bg-black/30 border-white/5" : "bg-[#d1fae5] border-[#dcfce7]";
+  const textMain = isDark ? "text-white" : "text-[#064e3b]";
+  const textSub = isDark ? "text-white/40" : "text-[#047857]";
   // const textMuted = isDark ? "text-white/60" : "text-gray-600";
 
   return (

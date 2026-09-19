@@ -223,10 +223,10 @@ function AppInner() {
     };
     const [title, message] = messages[verificationState];
     return (
-      <div className={`min-h-screen ${theme === "dark" ? "bg-[#020617] text-white" : "bg-gray-50 text-gray-900"} flex items-center justify-center p-6`}>
-        <div className={`max-w-md text-center border ${theme === "dark" ? "border-white/10 bg-white/5" : "border-gray-200 bg-white"} rounded-3xl p-10`}>
+      <div className={`min-h-screen ${theme === "dark" ? "bg-[#020617] text-white" : "bg-[#f0fdf4] text-[#064e3b]"} flex items-center justify-center p-6`}>
+        <div className={`max-w-md text-center border ${theme === "dark" ? "border-white/10 bg-white/5" : "border-[#bbf7d0] bg-[#f0fdf4]"} rounded-3xl p-10`}>
           <h1 className="text-2xl font-black uppercase">{title}</h1>
-          <p className={`mt-3 text-sm ${theme === "dark" ? "text-white/50" : "text-gray-500"}`}>{message}</p>
+          <p className={`mt-3 text-sm ${theme === "dark" ? "text-white/50" : "text-[#047857]"}`}>{message}</p>
           {verificationState !== "loading" && (
             <button
               onClick={() => { window.location.hash = "#/"; window.location.reload(); }}
@@ -275,8 +275,8 @@ function AppInner() {
 
     if (adminSession === "checking") {
       return (
-        <div className={`min-h-screen ${theme === "dark" ? "bg-[#020617] text-white" : "bg-gray-50 text-gray-900"} flex items-center justify-center p-6`}>
-          <p className={`text-xs font-black uppercase tracking-[3px] ${theme === "dark" ? "text-white/40" : "text-gray-400"}`}>Checking Admin Authorization...</p>
+        <div className={`min-h-screen ${theme === "dark" ? "bg-[#020617] text-white" : "bg-[#f0fdf4] text-[#064e3b]"} flex items-center justify-center p-6`}>
+          <p className={`text-xs font-black uppercase tracking-[3px] ${theme === "dark" ? "text-white/40" : "text-[#059669]"}`}>Checking Admin Authorization...</p>
         </div>
       );
     }
@@ -377,7 +377,7 @@ function AppInner() {
   // Check if User is Blocked
   if (userBlockedMessage) {
     return (
-      <div className={`min-h-screen ${theme === "dark" ? "bg-[#020617] text-white" : "bg-gray-50 text-gray-900"} flex items-center justify-center p-6`}>
+      <div className={`min-h-screen ${theme === "dark" ? "bg-[#020617] text-white" : "bg-[#f0fdf4] text-[#064e3b]"} flex items-center justify-center p-6`}>
         <div className={`max-w-md text-center border border-red-500/20 bg-red-500/10 rounded-3xl p-10 space-y-4`}>
           <span className="text-4xl">🚫</span>
           <h1 className="text-2xl font-black uppercase text-red-400">Account Blocked</h1>
@@ -400,7 +400,7 @@ function AppInner() {
   }
 
   return (
-    <div className={`min-h-screen ${theme === "dark" ? "bg-[#020617] text-white selection:bg-amber-500/30" : "bg-gray-50 text-gray-900 selection:bg-amber-500/30"}`}>
+    <div className={`min-h-screen ${theme === "dark" ? "bg-[#020617] text-white selection:bg-amber-500/30" : "bg-[#f0fdf4] text-[#064e3b] selection:bg-emerald-500/30"}`}>
       <UserNavigation
         activeTab={userTab}
         onTabChange={tab => setUserTab(tab)}
@@ -412,32 +412,32 @@ function AppInner() {
 
       <main className="max-w-4xl mx-auto p-6 sm:p-10">
         {userTab === "home" && (
-          <div className={`${theme === "dark" ? "bg-white/5 border-white/10" : "bg-white border-gray-200"} border rounded-[2.5rem] p-10 text-center space-y-6`}>
+          <div className={`${theme === "dark" ? "bg-white/5 border-white/10" : "bg-[#f0fdf4] border-[#bbf7d0]"} border rounded-[2.5rem] p-10 text-center space-y-6`}>
             <span className="text-xs font-black uppercase tracking-[4px] text-amber-500">Welcome, {userData.profile?.display_name || "User"}</span>
             <h1 className="text-4xl font-black uppercase tracking-tight">Your Digital ID Card</h1>
 
             <div className="pt-4 space-y-4">
               {userData.cards.length > 0 ? (
                 <div className="space-y-4">
-                  <div className={`${theme === "dark" ? "bg-black/30 border-white/10" : "bg-gray-100 border-gray-200"} border px-6 py-4 rounded-2xl inline-block`}>
-                    <p className={`text-[10px] font-black ${theme === "dark" ? "text-white/30" : "text-gray-400"} uppercase tracking-widest`}>Card Status</p>
+                  <div className={`${theme === "dark" ? "bg-black/30 border-white/10" : "bg-[#f0fdf4] border-[#bbf7d0]"} border px-6 py-4 rounded-2xl inline-block`}>
+                    <p className={`text-[10px] font-black ${theme === "dark" ? "text-white/30" : "text-[#059669]"} uppercase tracking-widest`}>Card Status</p>
                     <span className="inline-block mt-1 px-3 py-1 bg-emerald-500/10 text-emerald-400 font-black rounded-lg uppercase text-sm">
                       Active
                     </span>
                   </div>
 
-                  <div className={`${theme === "dark" ? "bg-black/30 border-white/10" : "bg-gray-100 border-gray-200"} border px-6 py-4 rounded-2xl inline-block`}>
+                  <div className={`${theme === "dark" ? "bg-black/30 border-white/10" : "bg-[#f0fdf4] border-[#bbf7d0]"} border px-6 py-4 rounded-2xl inline-block`}>
                     <p className="text-[10px] font-black text-amber-500 uppercase tracking-widest">Current Plan</p>
-                    <p className={`font-black ${theme === "dark" ? "text-white" : "text-gray-900"} text-lg mt-1`}>{userData.plan?.name || "Basic"}</p>
-                    <p className={`text-xs ${theme === "dark" ? "text-white/40" : "text-gray-500"} font-semibold`}>
+                    <p className={`font-black ${theme === "dark" ? "text-white" : "text-[#064e3b]"} text-lg mt-1`}>{userData.plan?.name || "Basic"}</p>
+                    <p className={`text-xs ${theme === "dark" ? "text-white/40" : "text-[#047857]"} font-semibold`}>
                       {userData.plan?.card_limit === -1 ? "Unlimited" : `${userData.plan?.card_limit || 100} Cards Limit`}
                     </p>
                   </div>
                 </div>
               ) : userData.application ? (
                 <div className="space-y-4">
-                  <div className={`${theme === "dark" ? "bg-black/30 border-white/10" : "bg-gray-100 border-gray-200"} border px-6 py-4 rounded-2xl inline-block`}>
-                    <p className={`text-[10px] font-black ${theme === "dark" ? "text-white/30" : "text-gray-400"} uppercase tracking-widest`}>Application</p>
+                  <div className={`${theme === "dark" ? "bg-black/30 border-white/10" : "bg-[#f0fdf4] border-[#bbf7d0]"} border px-6 py-4 rounded-2xl inline-block`}>
+                    <p className={`text-[10px] font-black ${theme === "dark" ? "text-white/30" : "text-[#059669]"} uppercase tracking-widest`}>Application</p>
                     <div className="mt-2">
                       <div className="flex items-center gap-2 mb-1">
                         <span className={`text-xs font-black uppercase px-3 py-1 rounded-lg ${
@@ -449,15 +449,15 @@ function AppInner() {
                           {userData.application.status}
                         </span>
                       </div>
-                      <p className={`text-sm font-bold ${theme === "dark" ? "text-white/60" : "text-gray-500"} mt-1`}>
+                      <p className={`text-sm font-bold ${theme === "dark" ? "text-white/60" : "text-[#047857]"} mt-1`}>
                         {userData.application.completion_percentage}% Complete
                       </p>
                     </div>
                   </div>
 
                   {userData.application.status !== "submitted" && userData.application.status !== "card_issued" && (
-                    <div className={`${theme === "dark" ? "bg-black/30 border-white/10" : "bg-gray-100 border-gray-200"} border px-8 py-6 rounded-2xl max-w-md mx-auto space-y-3`}>
-                      <p className={`text-sm ${theme === "dark" ? "text-white/50" : "text-gray-500"}`}>
+                    <div className={`${theme === "dark" ? "bg-black/30 border-white/10" : "bg-[#f0fdf4] border-[#bbf7d0]"} border px-8 py-6 rounded-2xl max-w-md mx-auto space-y-3`}>
+                      <p className={`text-sm ${theme === "dark" ? "text-white/50" : "text-[#047857]"}`}>
                         {userData.application.completion_percentage === 100
                           ? "Your application is complete. Submit it to proceed."
                           : "Continue filling out your card application."}
@@ -466,8 +466,8 @@ function AppInner() {
                   )}
                 </div>
               ) : (
-                <div className={`${theme === "dark" ? "bg-black/30 border-white/10" : "bg-gray-100 border-gray-200"} border px-8 py-6 rounded-2xl max-w-md mx-auto space-y-3`}>
-                  <p className={`text-sm ${theme === "dark" ? "text-white/50" : "text-gray-500"}`}>
+                <div className={`${theme === "dark" ? "bg-black/30 border-white/10" : "bg-[#f0fdf4] border-[#bbf7d0]"} border px-8 py-6 rounded-2xl max-w-md mx-auto space-y-3`}>
+                  <p className={`text-sm ${theme === "dark" ? "text-white/50" : "text-[#047857]"}`}>
                     No card issued yet. Create your card application to get started.
                   </p>
                 </div>
@@ -486,7 +486,7 @@ function AppInner() {
         {userTab === "my-card" && <UserMyCardPage />}
         {userTab === "apply" && <UserApplicationForm />}
         {userTab === "plans" && (
-          <div className={`${theme === "dark" ? "bg-white/5 border-white/10" : "bg-white border-gray-200"} border rounded-[2.5rem] p-10`}>
+          <div className={`${theme === "dark" ? "bg-white/5 border-white/10" : "bg-[#f0fdf4] border-[#bbf7d0]"} border rounded-[2.5rem] p-10`}>
             <UserApplicationForm />
           </div>
         )}
