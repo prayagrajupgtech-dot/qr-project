@@ -262,7 +262,39 @@ export default async (request: Request) => {
             .eq("id", profile.id);
         }
 
+        // Generate a login link to get a session token for the Google user
+        let token = "";
+        try {
+          const { data: linkData } = await supabase.auth.admin.generateLink({
+            type: "magiclink",
+            email: email
+          });
+          if (linkData?.properties?.hashed_token) {
+            // Use the hashed token to sign in
+            const { data: verifyData } = await supabase.auth.verifyOtp({
+              email,
+              token: linkData.properties.hashed_token,
+              type: "magiclink"
+            });
+            token = verifyData?.session?.access_token || "";
+          }
+        } catch {
+          // Fallback: try creating a temporary password and signing in
+          try {
+            const tempPass = `goog_${Date.now()}_${Math.random().toString(36).slice(2)}`;
+            await supabase.auth.admin.updateUserById(profile.id, { password: tempPass });
+            const { data: signInData } = await supabase.auth.signInWithPassword({
+              email,
+              password: tempPass
+            });
+            token = signInData?.session?.access_token || "";
+          } catch {
+            // Token generation failed — user data still returned
+          }
+        }
+
         return jsonResponse({
+          token,
           user: {
             id: profile.id,
             email,

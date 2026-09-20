@@ -21,9 +21,16 @@ interface GoogleButtonConfig {
   locale?: string;
 }
 
+interface GooglePromptNotification {
+  isNotDisplayed: () => boolean;
+  isSkippedMoment: () => boolean;
+  getNotDisplayedReason: () => string;
+  getSkippedReason: () => string;
+}
+
 interface GoogleAccountsId {
   initialize(config: GoogleInitializeConfig): void;
-  prompt(): void;
+  prompt(callback?: (notification: GooglePromptNotification) => void): void;
   renderButton(parent: HTMLElement, config: GoogleButtonConfig): void;
   disableAutoSelect(): void;
 }

@@ -37,6 +37,9 @@ export default function UserMyCardPage() {
   const [recovering, setRecovering] = useState(false);
   const [fixing, setFixing] = useState(false);
   const [fixResult, setFixResult] = useState("");
+  const [showFixForm, setShowFixForm] = useState(false);
+  const [fixPaymentId, setFixPaymentId] = useState("");
+  const [fixOrderId, setFixOrderId] = useState("");
 
   const getToken = () => session?.access_token || localStorage.getItem("maurya_user_token") || "";
 
@@ -90,6 +93,10 @@ export default function UserMyCardPage() {
   }
 
   async function handleFixPayment() {
+    if (!fixPaymentId.trim() || !fixOrderId.trim()) {
+      setFixResult("Please enter both Payment ID and Order ID.");
+      return;
+    }
     setFixing(true);
     setFixResult("");
     try {
@@ -98,8 +105,8 @@ export default function UserMyCardPage() {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
         body: JSON.stringify({
-          paymentId: "pay_TdciDfJfZbKnIMs",
-          orderId: "order_Tdch4GttO4xJdj"
+          paymentId: fixPaymentId.trim(),
+          orderId: fixOrderId.trim()
         })
       });
       const data = await res.json();
@@ -154,13 +161,38 @@ export default function UserMyCardPage() {
               {recovering ? "Recovering..." : "Recover Card"}
             </button>
             <button
-              onClick={handleFixPayment}
+              onClick={() => setShowFixForm(v => !v)}
               disabled={fixing}
               className="bg-emerald-500 text-black text-xs font-black uppercase tracking-[2px] px-6 py-3 rounded-xl disabled:opacity-40"
             >
-              {fixing ? "Creating..." : "Fix Payment"}
+              {showFixForm ? "Cancel" : "Fix Payment"}
             </button>
           </div>
+          {showFixForm && (
+            <div className="mt-3 space-y-2">
+              <input
+                type="text"
+                value={fixPaymentId}
+                onChange={e => setFixPaymentId(e.target.value)}
+                placeholder="Razorpay Payment ID (e.g. pay_...)"
+                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-xs font-bold outline-none focus:border-amber-500/60"
+              />
+              <input
+                type="text"
+                value={fixOrderId}
+                onChange={e => setFixOrderId(e.target.value)}
+                placeholder="Razorpay Order ID (e.g. order_...)"
+                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-xs font-bold outline-none focus:border-amber-500/60"
+              />
+              <button
+                onClick={handleFixPayment}
+                disabled={fixing || !fixPaymentId.trim() || !fixOrderId.trim()}
+                className="w-full bg-emerald-500 text-black text-xs font-black uppercase tracking-[2px] px-6 py-2.5 rounded-xl disabled:opacity-40"
+              >
+                {fixing ? "Verifying & Creating..." : "Submit Payment Details"}
+              </button>
+            </div>
+          )}
           {fixResult && <p className="text-red-400 text-xs mt-2">{fixResult}</p>}
         </div>
       </div>

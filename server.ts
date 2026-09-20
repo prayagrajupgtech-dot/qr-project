@@ -1,5 +1,6 @@
 import { createServer, type IncomingMessage, type ServerResponse } from "node:http";
 import { existsSync, readFileSync, statSync } from "node:fs";
+import { createGzip } from "node:zlib";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -41,12 +42,27 @@ async function loadHandler(name: string) {
   return null;
 }
 
-// Guess content type
+// File cache: avoid re-reading from disk on every request
+const fileCache: Record<string, { data: Buffer; mtime: number }> = {};
+function getCachedFile(filePath: string): Buffer | null {
+  try {
+    const stat = statSync(filePath);
+    const cached = fileCache[filePath];
+    if (cached && cached.mtime === stat.mtimeMs) return cached.data;
+    const data = readFileSync(filePath);
+    fileCache[filePath] = { data, mtime: stat.mtimeMs };
+    return data;
+  } catch {
+    return null;
+  }
+}
+
+// Content types
 const MIME: Record<string, string> = {
-  ".html": "text/html",
-  ".js": "application/javascript",
-  ".css": "text/css",
-  ".json": "application/json",
+  ".html": "text/html; charset=utf-8",
+  ".js": "application/javascript; charset=utf-8",
+  ".css": "text/css; charset=utf-8",
+  ".json": "application/json; charset=utf-8",
   ".png": "image/png",
   ".jpg": "image/jpeg",
   ".svg": "image/svg+xml",
@@ -55,8 +71,19 @@ const MIME: Record<string, string> = {
   ".woff2": "font/woff2",
 };
 
+// Caching rules: immutable for hashed assets, short for HTML
+function getCacheControl(ext: string): string {
+  if (ext === ".html") return "no-cache";
+  if (ext === ".js" || ext === ".css") return "public, max-age=31536000, immutable";
+  return "public, max-age=86400";
+}
+
 function firstHeader(value: string | string[] | undefined): string {
   return Array.isArray(value) ? value[0] : value || "";
+}
+
+function acceptsGzip(req: IncomingMessage): boolean {
+  return (req.headers["accept-encoding"] || "").includes("gzip");
 }
 
 async function handleRequest(req: IncomingMessage, res: ServerResponse) {
@@ -108,20 +135,42 @@ async function handleRequest(req: IncomingMessage, res: ServerResponse) {
     return;
   }
 
-  // --- Static files ---
+  // --- Static files (with cache + gzip) ---
   let filePath = path.join(DIST, url === "/" ? "index.html" : url);
   if (!existsSync(filePath) || statSync(filePath).isDirectory()) {
     filePath = path.join(DIST, "index.html"); // SPA fallback
   }
-  try {
-    const ext = path.extname(filePath);
-    const content = readFileSync(filePath);
-    res.writeHead(200, { "Content-Type": MIME[ext] || "application/octet-stream" });
-    res.end(content);
-  } catch {
+
+  const content = getCachedFile(filePath);
+  if (!content) {
     res.writeHead(404);
     res.end("Not found");
+    return;
   }
+
+  const ext = path.extname(filePath);
+  const contentType = MIME[ext] || "application/octet-stream";
+  const cacheControl = getCacheControl(ext);
+
+  // Gzip compression for text-based assets
+  if (acceptsGzip(req) && (ext === ".html" || ext === ".js" || ext === ".css" || ext === ".json" || ext === ".svg")) {
+    const gzip = createGzip();
+    res.writeHead(200, {
+      "Content-Type": contentType,
+      "Content-Encoding": "gzip",
+      "Cache-Control": cacheControl,
+      "Vary": "Accept-Encoding",
+    });
+    gzip.pipe(res);
+    gzip.end(content);
+    return;
+  }
+
+  res.writeHead(200, {
+    "Content-Type": contentType,
+    "Cache-Control": cacheControl,
+  });
+  res.end(content);
 }
 
 loadEnv();

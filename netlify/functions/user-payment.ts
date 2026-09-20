@@ -341,7 +341,7 @@ export default async (request: Request) => {
       // Find all successful payments for this user (by user_id OR by email in application)
       let { data: payments, error: pErr } = await supabase
         .from("payments")
-        .select("id, application_id, plan_id, user_id")
+        .select("id, application_id, plan_id, user_id, transaction_id")
         .eq("user_id", authUser.userId)
         .eq("status", "success");
 
@@ -359,7 +359,8 @@ export default async (request: Request) => {
             id: p.id,
             application_id: p.application_id,
             plan_id: p.plan_id,
-            user_id: p.user_id
+            user_id: p.user_id,
+            transaction_id: p.transaction_id
           }));
         }
       }
@@ -368,7 +369,7 @@ export default async (request: Request) => {
       if (!payments || payments.length === 0) {
         const { data: orphanPayments } = await supabase
           .from("payments")
-          .select("id, application_id, plan_id, user_id")
+          .select("id, application_id, plan_id, user_id, transaction_id")
           .eq("status", "success")
           .or("user_id.is.null");
         if (orphanPayments && orphanPayments.length > 0) {
@@ -401,6 +402,22 @@ export default async (request: Request) => {
 
         if (existingCards && existingCards.length > 0) continue;
 
+        // Verify payment with Razorpay if not already verified with transaction_id
+        if (!payment.transaction_id) {
+          const { data: payRow } = await supabase
+            .from("payments")
+            .select("order_id, transaction_id")
+            .eq("id", payment.id)
+            .maybeSingle();
+
+          if (payRow?.transaction_id) {
+            // Has transaction_id, safe to proceed
+          } else {
+            // No transaction_id means payment was never confirmed by Razorpay — skip
+            continue;
+          }
+        }
+
         // Fix orphaned payment user_id
         if (!payment.user_id) {
           await supabase.from("payments").update({ user_id: authUser.userId }).eq("id", payment.id);
@@ -414,7 +431,7 @@ export default async (request: Request) => {
         const cardNumber = `MRY-${crypto.randomUUID().replace(/-/g, "").slice(0, 8).toUpperCase()}`;
         const qrToken = crypto.randomUUID();
 
-        const newCard = await addCard({
+        await addCard({
           id: crypto.randomUUID(),
           card_number: cardNumber,
           name: application?.full_name || "",

@@ -1,35 +1,37 @@
-import { useState, useEffect, createContext, useContext, ReactNode } from "react";
+import { useState, useEffect, createContext, useContext, ReactNode, lazy, Suspense } from "react";
 
 // Auth & Components
-import AdminLogin from "./components/AdminLogin";
-import UserLogin from "./components/UserLogin";
-import UserRegister from "./components/UserRegister";
 import LoginSelectionPage from "./components/auth/LoginSelectionPage";
 import PersonDetailView from "./components/PersonDetailView";
-import SetupPasswordPage from "./components/SetupPasswordPage";
 import { useAuth } from "./contexts/AuthContext";
 
-// Admin Panel Components
-import AdminLayout from "./components/admin/AdminLayout";
-import AdminDashboard from "./components/admin/AdminDashboard";
-import AdminUsers from "./components/admin/AdminUsers";
-import AdminUserDetails from "./components/admin/AdminUserDetails";
-import AdminPlans from "./components/admin/AdminPlans";
-import AdminCardsList from "./components/admin/AdminCardsList";
-import AdminCreateCard from "./components/admin/AdminCreateCard";
-import AdminActivity from "./components/admin/AdminActivity";
-import AdminSettings from "./components/admin/AdminSettings";
-import AdminApplications from "./components/admin/AdminApplications";
-import AdminApplicationDetails from "./components/admin/AdminApplicationDetails";
-import AdminNotifications from "./components/admin/AdminNotifications";
-import AdminAnalytics from "./components/admin/AdminAnalytics";
-import AdminProfile from "./components/admin/AdminProfile";
+// Lazy-loaded Auth Pages
+const AdminLogin = lazy(() => import("./components/AdminLogin"));
+const UserLogin = lazy(() => import("./components/UserLogin"));
+const UserRegister = lazy(() => import("./components/UserRegister"));
+const SetupPasswordPage = lazy(() => import("./components/SetupPasswordPage"));
 
-// User Panel Components
-import UserNavigation from "./components/user/UserNavigation";
-import UserMyCardPage from "./components/user/UserMyCardPage";
-import UserProfilePage from "./components/user/UserProfilePage";
-import UserApplicationForm from "./components/user/UserApplicationForm";
+// Lazy-loaded Admin Panel Components
+const AdminLayout = lazy(() => import("./components/admin/AdminLayout"));
+const AdminDashboard = lazy(() => import("./components/admin/AdminDashboard"));
+const AdminUsers = lazy(() => import("./components/admin/AdminUsers"));
+const AdminUserDetails = lazy(() => import("./components/admin/AdminUserDetails"));
+const AdminPlans = lazy(() => import("./components/admin/AdminPlans"));
+const AdminCardsList = lazy(() => import("./components/admin/AdminCardsList"));
+const AdminCreateCard = lazy(() => import("./components/admin/AdminCreateCard"));
+const AdminActivity = lazy(() => import("./components/admin/AdminActivity"));
+const AdminSettings = lazy(() => import("./components/admin/AdminSettings"));
+const AdminApplications = lazy(() => import("./components/admin/AdminApplications"));
+const AdminApplicationDetails = lazy(() => import("./components/admin/AdminApplicationDetails"));
+const AdminNotifications = lazy(() => import("./components/admin/AdminNotifications"));
+const AdminAnalytics = lazy(() => import("./components/admin/AdminAnalytics"));
+const AdminProfile = lazy(() => import("./components/admin/AdminProfile"));
+
+// Lazy-loaded User Panel Components
+const UserNavigation = lazy(() => import("./components/user/UserNavigation"));
+const UserMyCardPage = lazy(() => import("./components/user/UserMyCardPage"));
+const UserProfilePage = lazy(() => import("./components/user/UserProfilePage"));
+const UserApplicationForm = lazy(() => import("./components/user/UserApplicationForm"));
 
 // Theme Context
 type Theme = "dark" | "light";
@@ -74,6 +76,17 @@ function decodeData(encoded: string): any {
   } catch (e) {
     return null;
   }
+}
+
+function LoadingFallback() {
+  return (
+    <div className="min-h-screen bg-[#020617] flex items-center justify-center">
+      <div className="text-center space-y-3">
+        <div className="w-8 h-8 border-2 border-amber-500 border-t-transparent rounded-full animate-spin mx-auto" />
+        <p className="text-[10px] font-black uppercase tracking-[3px] text-white/40">Loading...</p>
+      </div>
+    </div>
+  );
 }
 
 function AppInner() {
@@ -524,7 +537,9 @@ function AppInner() {
 export default function App() {
   return (
     <ThemeProvider>
-      <AppInner />
+      <Suspense fallback={<LoadingFallback />}>
+        <AppInner />
+      </Suspense>
     </ThemeProvider>
   );
 }

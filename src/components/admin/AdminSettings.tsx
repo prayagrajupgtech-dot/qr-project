@@ -13,6 +13,9 @@ export default function AdminSettings() {
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [showCurrentPass, setShowCurrentPass] = useState(false);
+  const [showNewPass, setShowNewPass] = useState(false);
+  const [showConfirmPass, setShowConfirmPass] = useState(false);
   const [changingPassword, setChangingPassword] = useState(false);
 
   const [msg, setMsg] = useState({ type: "", text: "" });
@@ -175,43 +178,58 @@ export default function AdminSettings() {
             <label className={`text-[10px] font-black ${s("text-white/30", "text-[#059669]")} uppercase tracking-widest block mb-2`}>
               Current Password
             </label>
-            <input
-              type="password"
-              value={currentPassword}
-              onChange={e => setCurrentPassword(e.target.value)}
-              placeholder="Enter current password"
-              className={`w-full px-4 py-2.5 rounded-xl text-sm font-semibold outline-none transition-colors ${
-                s("bg-white/5 border border-white/10 text-white placeholder-white/20 focus:border-amber-500", "bg-[#d1fae5] border border-[#bbf7d0] text-[#064e3b] placeholder-[#059669]/50 focus:border-[#059669]")
-              }`}
-            />
+            <div className="relative">
+              <input
+                type={showCurrentPass ? "text" : "password"}
+                value={currentPassword}
+                onChange={e => setCurrentPassword(e.target.value)}
+                placeholder="Enter current password"
+                className={`w-full px-4 py-2.5 pr-10 rounded-xl text-sm font-semibold outline-none transition-colors ${
+                  s("bg-white/5 border border-white/10 text-white placeholder-white/20 focus:border-amber-500", "bg-[#d1fae5] border border-[#bbf7d0] text-[#064e3b] placeholder-[#059669]/50 focus:border-[#059669]")
+                }`}
+              />
+              <button type="button" onClick={() => setShowCurrentPass(!showCurrentPass)} className="absolute right-3 top-1/2 -translate-y-1/2 text-white/40 hover:text-white/70">
+                {showCurrentPass ? <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><path d="M14.12 14.12a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg> : <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>}
+              </button>
+            </div>
           </div>
           <div>
             <label className={`text-[10px] font-black ${s("text-white/30", "text-[#059669]")} uppercase tracking-widest block mb-2`}>
               New Password
             </label>
-            <input
-              type="password"
-              value={newPassword}
-              onChange={e => setNewPassword(e.target.value)}
-              placeholder="Min 8 characters"
-              className={`w-full px-4 py-2.5 rounded-xl text-sm font-semibold outline-none transition-colors ${
-                s("bg-white/5 border border-white/10 text-white placeholder-white/20 focus:border-amber-500", "bg-[#d1fae5] border border-[#bbf7d0] text-[#064e3b] placeholder-[#059669]/50 focus:border-[#059669]")
-              }`}
-            />
+            <div className="relative">
+              <input
+                type={showNewPass ? "text" : "password"}
+                value={newPassword}
+                onChange={e => setNewPassword(e.target.value)}
+                placeholder="Min 8 characters"
+                className={`w-full px-4 py-2.5 pr-10 rounded-xl text-sm font-semibold outline-none transition-colors ${
+                  s("bg-white/5 border border-white/10 text-white placeholder-white/20 focus:border-amber-500", "bg-[#d1fae5] border border-[#bbf7d0] text-[#064e3b] placeholder-[#059669]/50 focus:border-[#059669]")
+                }`}
+              />
+              <button type="button" onClick={() => setShowNewPass(!showNewPass)} className="absolute right-3 top-1/2 -translate-y-1/2 text-white/40 hover:text-white/70">
+                {showNewPass ? <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><path d="M14.12 14.12a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg> : <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>}
+              </button>
+            </div>
           </div>
           <div>
             <label className={`text-[10px] font-black ${s("text-white/30", "text-[#059669]")} uppercase tracking-widest block mb-2`}>
               Confirm New Password
             </label>
-            <input
-              type="password"
-              value={confirmPassword}
-              onChange={e => setConfirmPassword(e.target.value)}
-              placeholder="Re-enter new password"
-              className={`w-full px-4 py-2.5 rounded-xl text-sm font-semibold outline-none transition-colors ${
-                s("bg-white/5 border border-white/10 text-white placeholder-white/20 focus:border-amber-500", "bg-[#d1fae5] border border-[#bbf7d0] text-[#064e3b] placeholder-[#059669]/50 focus:border-[#059669]")
-              }`}
-            />
+            <div className="relative">
+              <input
+                type={showConfirmPass ? "text" : "password"}
+                value={confirmPassword}
+                onChange={e => setConfirmPassword(e.target.value)}
+                placeholder="Re-enter new password"
+                className={`w-full px-4 py-2.5 pr-10 rounded-xl text-sm font-semibold outline-none transition-colors ${
+                  s("bg-white/5 border border-white/10 text-white placeholder-white/20 focus:border-amber-500", "bg-[#d1fae5] border border-[#bbf7d0] text-[#064e3b] placeholder-[#059669]/50 focus:border-[#059669]")
+                }`}
+              />
+              <button type="button" onClick={() => setShowConfirmPass(!showConfirmPass)} className="absolute right-3 top-1/2 -translate-y-1/2 text-white/40 hover:text-white/70">
+                {showConfirmPass ? <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><path d="M14.12 14.12a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg> : <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>}
+              </button>
+            </div>
           </div>
           <button
             onClick={handleChangePassword}
