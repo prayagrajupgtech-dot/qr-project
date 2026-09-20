@@ -24,7 +24,7 @@ export default async (request: Request) => {
       if (isUuid) {
         const result = await supabase
           .from("id_cards")
-          .select("id, card_number, name, phone, parent_phone, date_of_birth, address, photo_url, status, user_id, plan_id, created_at")
+          .select("id, card_number, name, phone, parent_phone, date_of_birth, address, photo_url, status, user_id, plan_id, created_at, issued_at, expires_at")
           .eq("id", id)
           .maybeSingle();
         data = result.data;
@@ -34,7 +34,7 @@ export default async (request: Request) => {
       if (!data) {
         const result = await supabase
           .from("id_cards")
-          .select("id, card_number, name, phone, parent_phone, date_of_birth, address, photo_url, status, user_id, plan_id, created_at")
+          .select("id, card_number, name, phone, parent_phone, date_of_birth, address, photo_url, status, user_id, plan_id, created_at, issued_at, expires_at")
           .eq("card_number", id)
           .maybeSingle();
         data = result.data;
@@ -42,6 +42,15 @@ export default async (request: Request) => {
 
       if (!data) {
         return jsonResponse({ error: "Verification record not found." }, 404);
+      }
+
+      // Runtime expiry check — if expires_at has passed, treat as expired
+      let effectiveStatus = data.status;
+      if (data.status === "active" && data.expires_at) {
+        if (new Date(data.expires_at) < new Date()) {
+          effectiveStatus = "expired";
+          await supabase.from("id_cards").update({ status: "expired", updated_at: new Date().toISOString() }).eq("id", data.id);
+        }
       }
 
       // Fetch plan name if plan_id exists
@@ -64,8 +73,9 @@ export default async (request: Request) => {
         dateOfBirth: data.date_of_birth,
         address: data.address,
         photoUrl: data.photo_url || null,
-        status: data.status,
-        planName
+        status: effectiveStatus,
+        planName,
+        expiresAt: data.expires_at || null
       });
     }
 
@@ -75,6 +85,14 @@ export default async (request: Request) => {
 
     if (!card) {
       return jsonResponse({ error: "Verification record not found." }, 404);
+    }
+
+    // Runtime expiry check
+    let effectiveStatus = card.status;
+    if (card.status === "active" && card.expires_at) {
+      if (new Date(card.expires_at) < new Date()) {
+        effectiveStatus = "expired";
+      }
     }
 
     let planName = "Basic";
@@ -92,8 +110,9 @@ export default async (request: Request) => {
       dateOfBirth: card.date_of_birth,
       address: card.address,
       photoUrl: card.photo_url || null,
-      status: card.status,
-      planName
+      status: effectiveStatus,
+      planName,
+      expiresAt: card.expires_at || null
     });
   } catch (error) {
     console.error("verify-card failed", error);

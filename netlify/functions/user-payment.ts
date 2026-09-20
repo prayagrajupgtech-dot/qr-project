@@ -139,28 +139,47 @@ export default async (request: Request) => {
 
       const cardNumber = `MRY-${crypto.randomUUID().replace(/-/g, "").slice(0, 8).toUpperCase()}`;
       const qrToken = crypto.randomUUID();
+      const issuedAt = new Date();
+      const expiresAt = new Date(issuedAt.getTime() + (plan?.duration_days || 30) * 86400000);
 
-      const newCard = await addCard({
-        id: crypto.randomUUID(),
-        card_number: cardNumber,
-        name: application?.full_name || "",
-        phone: application?.phone || "",
-        parent_phone: application?.parent_phone || null,
-        date_of_birth: application?.date_of_birth?.slice(0, 10) || "2000-01-01",
-        address: application?.address || "",
-        edit_token_hash: crypto.randomUUID(),
-        photo_url: application?.photo_url || undefined,
-        country: application?.country || undefined,
-        country_code: application?.country_code || undefined,
-        user_id: authUser.userId,
-        application_id: payment.application_id || undefined,
-        plan_id: payment.plan_id || undefined,
-        payment_id: payment.id,
-        qr_token: qrToken,
-        status: "active",
-        issued_at: new Date().toISOString(),
-        created_at: new Date().toISOString()
-      });
+      // If user already has an active/expired card, reactivate it with new expiry
+      const existingCards = await getCardsByUserId(authUser.userId);
+      const existingCard = existingCards.find(c => c.plan_id === payment.plan_id);
+
+      let newCard;
+      if (existingCard) {
+        const supabase = getSupabaseAdmin();
+        await supabase.from("id_cards").update({
+          status: "active",
+          issued_at: issuedAt.toISOString(),
+          expires_at: expiresAt.toISOString(),
+          updated_at: new Date().toISOString()
+        }).eq("id", existingCard.id);
+        newCard = { id: existingCard.id, card_number: existingCard.card_number };
+      } else {
+        newCard = await addCard({
+          id: crypto.randomUUID(),
+          card_number: cardNumber,
+          name: application?.full_name || "",
+          phone: application?.phone || "",
+          parent_phone: application?.parent_phone || null,
+          date_of_birth: application?.date_of_birth?.slice(0, 10) || "2000-01-01",
+          address: application?.address || "",
+          edit_token_hash: crypto.randomUUID(),
+          photo_url: application?.photo_url || undefined,
+          country: application?.country || undefined,
+          country_code: application?.country_code || undefined,
+          user_id: authUser.userId,
+          application_id: payment.application_id || undefined,
+          plan_id: payment.plan_id || undefined,
+          payment_id: payment.id,
+          qr_token: qrToken,
+          status: "active",
+          issued_at: issuedAt.toISOString(),
+          expires_at: expiresAt.toISOString(),
+          created_at: new Date().toISOString()
+        });
+      }
 
       if (payment.application_id) {
         await saveApplication({ id: payment.application_id, status: "card_issued" });
@@ -169,7 +188,7 @@ export default async (request: Request) => {
       await saveNotification({
         type: "card_issued",
         title: "Card Issued",
-        message: `Your ID card ${cardNumber} has been issued successfully.`,
+        message: existingCard ? `Your plan has been renewed. Card ${existingCard.card_number} is now active until ${expiresAt.toLocaleDateString()}.` : `Your ID card ${cardNumber} has been issued successfully.`,
         related_user_id: authUser.userId,
         related_application_id: payment.application_id || null,
         read: false
@@ -184,7 +203,7 @@ export default async (request: Request) => {
         read: false
       });
 
-      return jsonResponse({ success: true, card: { cardNumber, qrToken, id: newCard.id } });
+      return jsonResponse({ success: true, card: { cardNumber: newCard.card_number, qrToken, id: newCard.id } });
     } catch (error) {
       console.error("user-payment verify error:", error);
       return jsonResponse({ error: "Could not verify payment." }, 500);
@@ -239,30 +258,45 @@ export default async (request: Request) => {
             const existingCards = await getCardsByUserId(payment.user_id || "");
             if (!existingCards.some(c => c.payment_id === payment.id)) {
               const application = await getApplicationById(payment.application_id);
+              const plan = payment.plan_id ? await getPlanById(payment.plan_id) : null;
               const cardNumber = `MRY-${crypto.randomUUID().replace(/-/g, "").slice(0, 8).toUpperCase()}`;
               const qrToken = crypto.randomUUID();
+              const issuedAt = new Date();
+              const expiresAt = new Date(issuedAt.getTime() + (plan?.duration_days || 30) * 86400000);
 
-              await addCard({
-                id: crypto.randomUUID(),
-                card_number: cardNumber,
-                name: application?.full_name || "",
-                phone: application?.phone || "",
-                parent_phone: application?.parent_phone || null,
-                date_of_birth: application?.date_of_birth?.slice(0, 10) || "2000-01-01",
-                address: application?.address || "",
-                edit_token_hash: crypto.randomUUID(),
-                photo_url: application?.photo_url || undefined,
-                country: application?.country || undefined,
-                country_code: application?.country_code || undefined,
-                user_id: payment.user_id || undefined,
-                application_id: payment.application_id || undefined,
-                plan_id: payment.plan_id || undefined,
-                payment_id: payment.id,
-                qr_token: qrToken,
-                status: "active",
-                issued_at: new Date().toISOString(),
-                created_at: new Date().toISOString()
-              });
+              // If user already has an expired card, reactivate it
+              const expiredCard = existingCards.find(c => c.status === "expired" || c.plan_id === payment.plan_id);
+              if (expiredCard) {
+                await supabase.from("id_cards").update({
+                  status: "active",
+                  issued_at: issuedAt.toISOString(),
+                  expires_at: expiresAt.toISOString(),
+                  updated_at: new Date().toISOString()
+                }).eq("id", expiredCard.id);
+              } else {
+                await addCard({
+                  id: crypto.randomUUID(),
+                  card_number: cardNumber,
+                  name: application?.full_name || "",
+                  phone: application?.phone || "",
+                  parent_phone: application?.parent_phone || null,
+                  date_of_birth: application?.date_of_birth?.slice(0, 10) || "2000-01-01",
+                  address: application?.address || "",
+                  edit_token_hash: crypto.randomUUID(),
+                  photo_url: application?.photo_url || undefined,
+                  country: application?.country || undefined,
+                  country_code: application?.country_code || undefined,
+                  user_id: payment.user_id || undefined,
+                  application_id: payment.application_id || undefined,
+                  plan_id: payment.plan_id || undefined,
+                  payment_id: payment.id,
+                  qr_token: qrToken,
+                  status: "active",
+                  issued_at: issuedAt.toISOString(),
+                  expires_at: expiresAt.toISOString(),
+                  created_at: new Date().toISOString()
+                });
+              }
 
               await saveApplication({ id: payment.application_id, status: "card_issued" });
 
@@ -430,6 +464,9 @@ export default async (request: Request) => {
 
         const cardNumber = `MRY-${crypto.randomUUID().replace(/-/g, "").slice(0, 8).toUpperCase()}`;
         const qrToken = crypto.randomUUID();
+        const plan = payment.plan_id ? await getPlanById(payment.plan_id) : null;
+        const issuedAt = new Date();
+        const expiresAt = new Date(issuedAt.getTime() + (plan?.duration_days || 30) * 86400000);
 
         await addCard({
           id: crypto.randomUUID(),
@@ -449,7 +486,8 @@ export default async (request: Request) => {
           payment_id: payment.id,
           qr_token: qrToken,
           status: "active",
-          issued_at: new Date().toISOString(),
+          issued_at: issuedAt.toISOString(),
+          expires_at: expiresAt.toISOString(),
           created_at: new Date().toISOString()
         });
 

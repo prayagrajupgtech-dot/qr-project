@@ -9,6 +9,7 @@ interface VerificationData {
   address?: string;
   planName?: string;
   status: "active" | "expired" | "blocked" | "legacy";
+  expiresAt?: string | null;
 }
 
 export default function PersonDetailView({ data }: { data: VerificationData }) {
@@ -37,7 +38,7 @@ export default function PersonDetailView({ data }: { data: VerificationData }) {
     : isBlocked
       ? "This ID card is currently inactive."
       : isExpired
-        ? "This ID card has expired."
+        ? `This ID card has expired${data.expiresAt ? ` on ${new Date(data.expiresAt).toLocaleDateString("en-IN", { day: "2-digit", month: "long", year: "numeric" })}` : ""}.`
         : "Legacy QR - Not database verified.";
 
   const headerBg = isActive

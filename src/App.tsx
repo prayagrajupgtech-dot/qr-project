@@ -64,6 +64,7 @@ interface VerificationData {
   address?: string;
   planName?: string;
   status: "active" | "expired" | "blocked" | "legacy";
+  expiresAt?: string | null;
 }
 
 function decodeData(encoded: string): any {
@@ -166,7 +167,8 @@ function AppInner() {
             dateOfBirth: result.dateOfBirth,
             address: result.address,
             planName: result.planName,
-            status: result.status
+            status: result.status,
+            expiresAt: result.expiresAt || null
           });
           setVerificationState("idle");
         } catch {

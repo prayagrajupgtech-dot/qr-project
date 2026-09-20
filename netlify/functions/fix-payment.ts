@@ -112,6 +112,9 @@ export default async (request: Request) => {
 
     const cardNumber = `MRY-${crypto.randomUUID().replace(/-/g, "").slice(0, 8).toUpperCase()}`;
     const qrToken = crypto.randomUUID();
+    const issuedAt = new Date();
+    const plan = app?.plan_id ? await (await import("./_shared/store.js")).getPlanById(app.plan_id) : null;
+    const expiresAt = new Date(issuedAt.getTime() + (plan?.duration_days || 30) * 86400000);
 
     const { error: cardErr } = await supabase.from("id_cards").insert([{
       id: crypto.randomUUID(),
@@ -131,7 +134,8 @@ export default async (request: Request) => {
       payment_id: paymentId,
       qr_token: qrToken,
       status: "active",
-      issued_at: new Date().toISOString(),
+      issued_at: issuedAt.toISOString(),
+      expires_at: expiresAt.toISOString(),
       created_at: new Date().toISOString()
     }]);
 
