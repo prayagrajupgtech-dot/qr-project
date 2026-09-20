@@ -170,6 +170,53 @@ export default async (request: Request) => {
     }
   }
 
+  if (request.method === "POST") {
+    try {
+      const body = await readJsonBody(request);
+      const targetId = (typeof body.id === "string" ? body.id : null) || userId;
+      if (!targetId) return jsonResponse({ error: "User ID is required." }, 400);
+
+      if (body.action === "reset-password") {
+        const newPassword = typeof body.password === "string" ? body.password.trim() : "";
+        if (!newPassword || newPassword.length < 6) {
+          return jsonResponse({ error: "Password must be at least 6 characters." }, 400);
+        }
+
+        if (!isSupabaseConfigured()) {
+          return jsonResponse({ error: "Supabase not configured." }, 500);
+        }
+
+        const supabase = getSupabaseAdmin();
+
+        const { data: existing } = await supabase
+          .from("user_profiles")
+          .select("id, email, display_name")
+          .eq("id", targetId)
+          .maybeSingle();
+
+        if (!existing) return jsonResponse({ error: "User not found." }, 404);
+
+        const { error: updateError } = await supabase.auth.admin.updateUserById(targetId, {
+          password: newPassword
+        });
+
+        if (updateError) {
+          console.error("Password reset error", updateError);
+          return jsonResponse({ error: "Failed to reset password." }, 500);
+        }
+
+        await logAdminAction("Password Reset", "admin", targetId, `Password reset for ${existing.display_name} (${existing.email})`);
+
+        return jsonResponse({ message: "Password reset successfully." }, 200);
+      }
+
+      return jsonResponse({ error: "Invalid action." }, 400);
+    } catch (error) {
+      console.error("admin-user-detail POST error", error);
+      return jsonResponse({ error: "Could not process request." }, 500);
+    }
+  }
+
   if (request.method === "DELETE") {
     if (!userId) return jsonResponse({ error: "User ID is required." }, 400);
 
