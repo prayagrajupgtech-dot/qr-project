@@ -97,7 +97,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const signInWithGoogle = useCallback(async () => {
     // Primary: Supabase Google OAuth (works everywhere, no domain restrictions)
     if (supabase && supabaseConfigured) {
-      const siteUrl = import.meta.env.VITE_PUBLIC_SITE_URL?.trim() || window.location.origin;
+      // Always use the actual origin the app was opened from (works on phone/LAN too).
+      // VITE_PUBLIC_SITE_URL is only a fallback for non-browser contexts.
+      const siteUrl = window.location.origin;
       const { error } = await supabase.auth.signInWithOAuth({
         provider: "google",
         options: { redirectTo: `${siteUrl}#/home` }
