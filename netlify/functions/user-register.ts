@@ -64,7 +64,10 @@ export default async (request: Request) => {
         return jsonResponse({ error: "An account with this email already exists." }, 409);
       }
 
-      // Create Supabase auth user
+      // Create Supabase auth user — or link password to an auth user that
+      // already exists (e.g. created moments ago via "Sign up with Google",
+      // which only pre-fills email and leaves profile creation to this form).
+      let authUserId: string;
       const { data: authData, error: authError } = await supabase.auth.admin.createUser({
         email,
         password,
@@ -73,13 +76,41 @@ export default async (request: Request) => {
       });
 
       if (authError) {
-        console.error("user-register createUser error", authError);
-        return jsonResponse({ error: authError.message || "Failed to create account." }, 500);
+        const msg = (authError.message || "").toLowerCase();
+        const alreadyExists = msg.includes("already") || msg.includes("exists") || msg.includes("taken") || msg.includes("duplicate");
+        if (!alreadyExists) {
+          console.error("user-register createUser error", authError);
+          return jsonResponse({ error: authError.message || "Failed to create account." }, 500);
+        }
+
+        // Find the existing auth user by email and set the password on it
+        const { data: listData, error: listError } = await supabase.auth.admin.listUsers({ perPage: 1000 });
+        if (listError) {
+          console.error("user-register listUsers error", listError);
+          return jsonResponse({ error: "Failed to create account." }, 500);
+        }
+        const existingAuth = (listData?.users || []).find((u: any) => (u.email || "").toLowerCase() === email);
+        if (!existingAuth) {
+          return jsonResponse({ error: "Failed to create account." }, 500);
+        }
+
+        const { error: updateError } = await supabase.auth.admin.updateUserById(existingAuth.id, {
+          password,
+          email_confirm: true,
+          user_metadata: { name: display_name }
+        });
+        if (updateError) {
+          console.error("user-register updateUser error", updateError);
+          return jsonResponse({ error: "Failed to create account." }, 500);
+        }
+        authUserId = existingAuth.id;
+      } else {
+        authUserId = authData.user.id;
       }
 
       // Create user_profiles record
       await supabase.from("user_profiles").insert({
-        id: authData.user.id,
+        id: authUserId,
         email,
         display_name,
         phone,
@@ -97,14 +128,14 @@ export default async (request: Request) => {
         type: "new_user",
         title: "New User Registered",
         message: `${display_name} (${email}) has registered a new account.`,
-        related_user_id: authData.user.id,
+        related_user_id: authUserId,
         read: false
       });
 
       return jsonResponse({
         success: true,
         user: {
-          id: authData.user.id,
+          id: authUserId,
           email,
           display_name
         }

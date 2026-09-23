@@ -1,12 +1,14 @@
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import { countries } from "../utils/countries";
 import PasswordStrength, { validatePassword } from "./PasswordStrength";
 import { useAuth } from "../contexts/AuthContext";
+import { supabase } from "../lib/supabase";
 
 export default function UserRegister() {
-  const { signInWithGoogle } = useAuth();
+  const { signUpWithGoogle } = useAuth();
   const [displayName, setDisplayName] = useState("");
   const [email, setEmail] = useState("");
+  const [googleVerified, setGoogleVerified] = useState(false);
   const [selectedCountry, setSelectedCountry] = useState("IN");
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
@@ -19,6 +21,52 @@ export default function UserRegister() {
   const [success, setSuccess] = useState("");
 
   const selectedCallingCode = countries.find(c => c.code === selectedCountry)?.callingCode || "+91";
+
+  // Google pre-fill: after "Sign up with Google" returns to #/register with a
+  // Supabase session, take ONLY email+name, then clear the session so the user
+  // completes the rest of the form manually.
+  useEffect(() => {
+    let cancelled = false;
+
+    async function prefillFromGoogle() {
+      try {
+        if (!supabase) return;
+        const { data: { session } } = await supabase.auth.getSession();
+        const gEmail = session?.user?.email?.trim() || "";
+        if (!gEmail) return;
+        const gName =
+          session.user.user_metadata?.full_name ||
+          session.user.user_metadata?.name ||
+          "";
+        if (cancelled) return;
+        setEmail(gEmail);
+        if (gName) setDisplayName(gName);
+        setGoogleVerified(true);
+        setSuccess("Google email verified! Please fill the remaining details below.");
+        // Clear the half-session — account is created only on form submit
+        await supabase.auth.signOut();
+      } catch {
+        // No session — normal manual registration
+      }
+    }
+
+    function handleGisPrefill(e: Event) {
+      const detail = (e as CustomEvent).detail || {};
+      if (detail.email) {
+        setEmail(detail.email);
+        if (detail.name) setDisplayName(detail.name);
+        setGoogleVerified(true);
+        setSuccess("Google email verified! Please fill the remaining details below.");
+      }
+    }
+
+    prefillFromGoogle();
+    window.addEventListener("google-signup-prefill", handleGisPrefill);
+    return () => {
+      cancelled = true;
+      window.removeEventListener("google-signup-prefill", handleGisPrefill);
+    };
+  }, []);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -106,7 +154,7 @@ export default function UserRegister() {
 
           {/* Google Sign-In */}
           <button
-            onClick={() => signInWithGoogle()}
+            onClick={() => signUpWithGoogle()}
             className="w-full flex items-center justify-center gap-3 bg-white text-black py-4 rounded-2xl font-black uppercase tracking-widest text-xs hover:bg-white/90 transition-all shadow-xl"
           >
             <svg viewBox="0 0 24 24" className="w-5 h-5" fill="currentColor">
@@ -155,15 +203,20 @@ export default function UserRegister() {
 
             <div>
               <label className="text-[10px] font-black text-white/40 uppercase tracking-widest block mb-1">
-                Email Address
+                Email Address {googleVerified && <span className="text-emerald-400">✓ Google Verified</span>}
               </label>
               <input
                 required
                 type="email"
                 value={email}
+                readOnly={googleVerified}
                 onChange={e => setEmail(e.target.value)}
                 placeholder="user@example.com"
-                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-xs font-bold outline-none focus:border-amber-500/60"
+                className={`w-full border rounded-xl px-4 py-3 text-xs font-bold outline-none focus:border-amber-500/60 ${
+                  googleVerified
+                    ? "bg-emerald-500/10 border-emerald-500/30 text-white cursor-not-allowed"
+                    : "bg-white/5 border-white/10"
+                }`}
               />
             </div>
 
