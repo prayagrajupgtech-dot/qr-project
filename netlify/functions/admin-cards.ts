@@ -86,18 +86,19 @@ export default async (request: Request) => {
           return jsonResponse({ error: "Could not fetch cards." }, 500);
         }
 
-        // Enrich cards with email from user_profiles
-        const enrichedCards = await Promise.all((cards || []).map(async (card) => {
-          let email = "";
-          if (card.user_id) {
-            const { data: profile } = await supabase
-              .from("user_profiles")
-              .select("email")
-              .eq("id", card.user_id)
-              .maybeSingle();
-            email = profile?.email || "";
-          }
-          return { ...card, email };
+        // Enrich cards with email — single batched lookup (no N+1)
+        const userIds = [...new Set((cards || []).map((c: any) => c.user_id).filter(Boolean))];
+        let emailMap: Record<string, string> = {};
+        if (userIds.length > 0) {
+          const { data: profiles } = await supabase
+            .from("user_profiles")
+            .select("id, email")
+            .in("id", userIds);
+          (profiles || []).forEach((p: any) => { emailMap[p.id] = p.email || ""; });
+        }
+        const enrichedCards = (cards || []).map((card: any) => ({
+          ...card,
+          email: (card.user_id && emailMap[card.user_id]) || ""
         }));
 
         return jsonResponse({ cards: enrichedCards }, 200);

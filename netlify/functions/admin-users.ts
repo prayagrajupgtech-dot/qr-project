@@ -1,6 +1,7 @@
 import { jsonResponse, readJsonBody } from "./_shared/http.js";
 import { requireAdmin } from "./_shared/admin-auth.js";
 import { getAllUsers, saveUser, logAdminAction, getAllPlans, getCardsByUserId } from "./_shared/store.js";
+import { getSupabaseAdmin, isSupabaseConfigured } from "./_shared/supabase.js";
 
 export default async (request: Request) => {
   const unauthorized = await requireAdmin(request);
@@ -10,6 +11,65 @@ export default async (request: Request) => {
 
   if (request.method === "GET") {
     try {
+      // Fast path: 2 parallel queries, card counts computed in memory
+      // (no N+1 per-user card lookups)
+      if (isSupabaseConfigured()) {
+        const supabase = getSupabaseAdmin();
+
+        const query = url.searchParams.get("query")?.toLowerCase().trim() || "";
+        const planFilter = url.searchParams.get("plan") || "";
+        const statusFilter = url.searchParams.get("status") || "";
+        const sortBy = url.searchParams.get("sort") || "newest";
+
+        let usersQuery = supabase
+          .from("user_profiles")
+          .select("id, display_name, email, phone, plan_id, status, created_at, last_login_at")
+          .neq("status", "deleted");
+
+        if (planFilter) usersQuery = usersQuery.eq("plan_id", planFilter);
+        if (statusFilter) usersQuery = usersQuery.eq("status", statusFilter);
+        if (query) {
+          usersQuery = usersQuery.or(`display_name.ilike.%${query}%,email.ilike.%${query}%,phone.ilike.%${query}%`);
+        }
+
+        const ascending = sortBy === "oldest";
+        const orderCol = sortBy === "name" ? "display_name" : "created_at";
+        usersQuery = usersQuery.order(orderCol, { ascending });
+
+        const [usersRes, plansRes, cardsRes] = await Promise.all([
+          usersQuery,
+          supabase.from("plans").select("id, name"),
+          supabase.from("id_cards").select("user_id")
+        ]);
+
+        if (usersRes.error) throw usersRes.error;
+
+        const planMap: Record<string, string> = {};
+        (plansRes.data || []).forEach((p: any) => { planMap[p.id] = p.name; });
+
+        const cardsCountMap: Record<string, number> = {};
+        (cardsRes.data || []).forEach((c: any) => {
+          if (c.user_id) cardsCountMap[c.user_id] = (cardsCountMap[c.user_id] || 0) + 1;
+        });
+
+        const users = usersRes.data || [];
+
+        const usersWithDetails = users.map((u: any) => ({
+          id: u.id,
+          name: u.display_name,
+          email: u.email,
+          phone: u.phone,
+          planId: u.plan_id,
+          planName: u.plan_id ? planMap[u.plan_id] || "Unassigned" : "Unassigned",
+          status: u.status,
+          cardsCount: cardsCountMap[u.id] || 0,
+          createdAt: u.created_at,
+          lastLogin: u.last_login_at
+        }));
+
+        return jsonResponse({ users: usersWithDetails }, 200);
+      }
+
       let users = await getAllUsers();
       const plans = await getAllPlans();
       const planMap: Record<string, string> = {};

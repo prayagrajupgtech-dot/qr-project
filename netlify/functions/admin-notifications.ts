@@ -13,8 +13,10 @@ export default async (request: Request) => {
   // GET - List notifications
   if (request.method === "GET") {
     try {
-      const notifications = await getNotifications();
-      const unreadCount = await getUnreadNotificationCount();
+      const [notifications, unreadCount] = await Promise.all([
+        getNotifications(),
+        getUnreadNotificationCount()
+      ]);
       return jsonResponse({ notifications, unreadCount }, 200);
     } catch (error) {
       console.error("admin-notifications GET error", error);

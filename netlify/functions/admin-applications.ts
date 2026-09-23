@@ -36,48 +36,40 @@ export default async (request: Request) => {
             return jsonResponse({ error: "Application not found." }, 404);
           }
 
-          // Fetch related data separately
-          let userProfile = null;
-          if (app.user_id) {
-            const { data } = await supabase
-              .from("user_profiles")
-              .select("id, email, display_name, phone, country, country_code")
-              .eq("id", app.user_id)
-              .maybeSingle();
-            userProfile = data;
-          }
-
-          let plan = null;
-          if (app.plan_id) {
-            const { data } = await supabase
-              .from("plans")
-              .select("id, name, price, duration_days")
-              .eq("id", app.plan_id)
-              .maybeSingle();
-            plan = data;
-          }
-
-          let payment = null;
-          {
-            const { data } = await supabase
+          // Fetch related data in parallel (all independent)
+          const [profileRes, planRes, paymentRes, cardRes] = await Promise.all([
+            app.user_id
+              ? supabase
+                  .from("user_profiles")
+                  .select("id, email, display_name, phone, country, country_code")
+                  .eq("id", app.user_id)
+                  .maybeSingle()
+              : Promise.resolve({ data: null }),
+            app.plan_id
+              ? supabase
+                  .from("plans")
+                  .select("id, name, price, duration_days")
+                  .eq("id", app.plan_id)
+                  .maybeSingle()
+              : Promise.resolve({ data: null }),
+            supabase
               .from("payments")
               .select("id, status, amount, currency, transaction_id, created_at")
               .eq("application_id", appId)
               .order("created_at", { ascending: false })
               .limit(1)
-              .maybeSingle();
-            payment = data;
-          }
-
-          let card = null;
-          {
-            const { data } = await supabase
+              .maybeSingle(),
+            supabase
               .from("id_cards")
               .select("id, card_number, status, qr_token, created_at")
               .eq("application_id", appId)
-              .maybeSingle();
-            card = data;
-          }
+              .maybeSingle()
+          ]);
+
+          const userProfile = (profileRes as any).data;
+          const plan = (planRes as any).data;
+          const payment = (paymentRes as any).data;
+          const card = (cardRes as any).data;
 
           const enriched = {
             ...app,
@@ -123,49 +115,46 @@ export default async (request: Request) => {
 
         let applications = apps || [];
 
-        // Enrich each application with related data
-        const enrichedApplications = await Promise.all(applications.map(async (app) => {
-          let userProfile = null;
-          if (app.user_id) {
-            const { data } = await supabase
-              .from("user_profiles")
-              .select("id, email, display_name, phone, country, country_code")
-              .eq("id", app.user_id)
-              .maybeSingle();
-            userProfile = data;
-          }
+        // Batch-fetch all related data in 4 parallel queries (no N+1)
+        const appIds = applications.map((a: any) => a.id);
+        const appUserIds = [...new Set(applications.map((a: any) => a.user_id).filter(Boolean))];
+        const appPlanIds = [...new Set(applications.map((a: any) => a.plan_id).filter(Boolean))];
 
-          let plan = null;
-          if (app.plan_id) {
-            const { data } = await supabase
-              .from("plans")
-              .select("id, name, price")
-              .eq("id", app.plan_id)
-              .maybeSingle();
-            plan = data;
-          }
+        const [profilesRes, plansRes, paymentsRes, cardsRes] = await Promise.all([
+          appUserIds.length > 0
+            ? supabase.from("user_profiles").select("id, email, display_name, phone, country, country_code").in("id", appUserIds)
+            : Promise.resolve({ data: [] as any[] }),
+          appPlanIds.length > 0
+            ? supabase.from("plans").select("id, name, price").in("id", appPlanIds)
+            : Promise.resolve({ data: [] as any[] }),
+          appIds.length > 0
+            ? supabase.from("payments").select("application_id, id, status, amount, transaction_id").in("application_id", appIds).order("created_at", { ascending: false })
+            : Promise.resolve({ data: [] as any[] }),
+          appIds.length > 0
+            ? supabase.from("id_cards").select("application_id, id, card_number, status, qr_token").in("application_id", appIds)
+            : Promise.resolve({ data: [] as any[] })
+        ]);
 
-          let payment = null;
-          {
-            const { data } = await supabase
-              .from("payments")
-              .select("id, status, amount, transaction_id")
-              .eq("application_id", app.id)
-              .order("created_at", { ascending: false })
-              .limit(1)
-              .maybeSingle();
-            payment = data;
-          }
+        const profileMap: Record<string, any> = {};
+        ((profilesRes as any).data || []).forEach((p: any) => { profileMap[p.id] = p; });
+        const planMap: Record<string, any> = {};
+        ((plansRes as any).data || []).forEach((p: any) => { planMap[p.id] = p; });
+        // Latest payment per application (already ordered desc)
+        const paymentMap: Record<string, any> = {};
+        (((paymentsRes as any).data || []) as any[]).forEach((p: any) => {
+          if (p.application_id && !paymentMap[p.application_id]) paymentMap[p.application_id] = p;
+        });
+        const cardMap: Record<string, any> = {};
+        (((cardsRes as any).data || []) as any[]).forEach((c: any) => {
+          if (c.application_id && !cardMap[c.application_id]) cardMap[c.application_id] = c;
+        });
 
-          let card = null;
-          {
-            const { data } = await supabase
-              .from("id_cards")
-              .select("id, card_number, status, qr_token")
-              .eq("application_id", app.id)
-              .maybeSingle();
-            card = data;
-          }
+        // Enrich each application from in-memory maps
+        const enrichedApplications = applications.map((app: any) => {
+          const userProfile = (app.user_id && profileMap[app.user_id]) || null;
+          const plan = (app.plan_id && planMap[app.plan_id]) || null;
+          const payment = paymentMap[app.id] || null;
+          const card = cardMap[app.id] || null;
 
           return {
             ...app,
@@ -184,7 +173,7 @@ export default async (request: Request) => {
             qr_token: card?.qr_token || null,
             admin_notes: (app as any).admin_notes || null
           };
-        }));
+        });
 
         // Apply search filter after enrichment
         if (searchQuery) {

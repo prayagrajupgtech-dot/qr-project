@@ -1,5 +1,6 @@
 import { jsonResponse } from "./_shared/http.js";
 import { verifyAdminSession } from "./admin-session.js";
+import { getSupabaseAdmin, isSupabaseConfigured } from "./_shared/supabase.js";
 import {
   getAllUsers, getAllCards, getAllApplications, getAllPayments, getAllPlans
 } from "./_shared/store.js";
@@ -108,13 +109,45 @@ export default async (request: Request) => {
     return d >= startDate && d < endDate;
   };
 
-  const [allUsers, allCards, allApplications, allPayments, plans] = await Promise.all([
-    getAllUsers(),
-    getAllCards(),
-    getAllApplications(),
-    getAllPayments(),
-    getAllPlans(),
-  ]);
+  // Fetch only the columns needed for aggregation (parallel, lightweight)
+  type SlimUser = { country?: string; plan_id: string | null; status: string; created_at: string };
+  type SlimCard = { status: string; created_at: string };
+  type SlimApp = { status: string; completion_percentage: number; created_at: string };
+  type SlimPayment = { status: string; amount: number; created_at: string };
+  type SlimPlan = { id: string; name: string };
+
+  let allUsers: SlimUser[];
+  let allCards: SlimCard[];
+  let allApplications: SlimApp[];
+  let allPayments: SlimPayment[];
+  let plans: SlimPlan[];
+
+  if (isSupabaseConfigured()) {
+    const supabase = getSupabaseAdmin();
+    const [u, c, a, p, pl] = await Promise.all([
+      supabase.from("user_profiles").select("country, plan_id, status, created_at").neq("status", "deleted"),
+      supabase.from("id_cards").select("status, created_at"),
+      supabase.from("card_applications").select("status, completion_percentage, created_at"),
+      supabase.from("payments").select("status, amount, created_at"),
+      supabase.from("plans").select("id, name")
+    ]);
+    if (u.error || c.error || a.error || p.error || pl.error) {
+      throw new Error("Analytics fetch failed.");
+    }
+    allUsers = (u.data || []) as SlimUser[];
+    allCards = (c.data || []) as SlimCard[];
+    allApplications = (a.data || []) as SlimApp[];
+    allPayments = (p.data || []) as SlimPayment[];
+    plans = (pl.data || []) as SlimPlan[];
+  } else {
+    [allUsers, allCards, allApplications, allPayments, plans] = await Promise.all([
+      getAllUsers(),
+      getAllCards(),
+      getAllApplications(),
+      getAllPayments(),
+      getAllPlans(),
+    ]);
+  }
 
   // Filter by date range
   const filteredUsers = allUsers.filter(u => inRange(u.created_at));
