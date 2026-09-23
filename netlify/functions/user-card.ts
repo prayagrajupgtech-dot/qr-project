@@ -12,33 +12,25 @@ export default async (request: Request) => {
   }
 
   try {
-    let userRecord = await getUserById(authUser.userId);
-    if (!userRecord && authUser.email) {
-      userRecord = await getUserByEmail(authUser.email);
-    }
-
-    if (userRecord?.status === "blocked") {
-      return jsonResponse({ error: "Your account has been blocked." }, 403);
-    }
-
     if (isSupabaseConfigured()) {
       const supabase = getSupabaseAdmin();
-      const { data: profile } = await supabase
-        .from("user_profiles")
-        .select("id, status")
-        .eq("id", authUser.userId)
-        .single();
+      const [{ data: profile }, { data: cards, error }] = await Promise.all([
+        supabase
+          .from("user_profiles")
+          .select("id, status")
+          .eq("id", authUser.userId)
+          .single(),
+        supabase
+          .from("id_cards")
+          .select("id, card_number, name, phone, parent_phone, date_of_birth, address, photo_url, status, user_id, plan_id, created_at")
+          .eq("user_id", authUser.userId)
+          .order("created_at", { ascending: false })
+          .limit(1)
+      ]);
 
       if (profile?.status === "blocked") {
         return jsonResponse({ error: "Your account has been blocked." }, 403);
       }
-
-      const { data: cards, error } = await supabase
-        .from("id_cards")
-        .select("id, card_number, name, phone, parent_phone, date_of_birth, address, photo_url, status, plan_id, created_at")
-        .eq("user_id", authUser.userId)
-        .order("created_at", { ascending: false })
-        .limit(1);
 
       if (error) {
         console.error("user-card fetch error", error);
@@ -68,6 +60,15 @@ export default async (request: Request) => {
     }
 
     // Local store fallback
+    let userRecord = await getUserById(authUser.userId);
+    if (!userRecord && authUser.email) {
+      userRecord = await getUserByEmail(authUser.email);
+    }
+
+    if (userRecord?.status === "blocked") {
+      return jsonResponse({ error: "Your account has been blocked." }, 403);
+    }
+
     const cards = await getCardsByUserId(userRecord?.id || authUser.userId);
     if (cards.length === 0) {
       return jsonResponse({ card: null });
