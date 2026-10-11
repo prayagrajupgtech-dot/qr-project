@@ -16,7 +16,7 @@ export default function UserNavigation({ activeTab, onTabChange, onLogout }: Use
       <div className="hidden sm:flex items-center justify-between px-4 py-3 max-w-4xl mx-auto">
         <div onClick={() => onTabChange("home")} className="flex items-center gap-3 cursor-pointer">
           <div className="w-10 h-10 bg-amber-500 rounded-xl flex items-center justify-center font-black text-black shadow-lg shadow-amber-500/20">ID</div>
-          <span className={`font-black text-lg tracking-tighter uppercase ${isDark ? "text-white" : "text-[#064e3b]"}`}>Maurya Generator</span>
+          <span className={`font-black text-lg tracking-tighter uppercase ${isDark ? "text-white" : "text-[#064e3b]"}`}>ResQRide</span>
         </div>
         <div className="flex items-center gap-2">
           <div className={`flex p-1 rounded-xl border ${isDark ? "bg-white/5 border-white/10" : "bg-[#d1fae5] border-[#bbf7d0]"}`}>
@@ -43,7 +43,7 @@ export default function UserNavigation({ activeTab, onTabChange, onLogout }: Use
       <div className="sm:hidden flex items-center justify-between px-4 py-3">
         <div onClick={() => onTabChange("home")} className="flex items-center gap-2 cursor-pointer">
           <div className="w-8 h-8 bg-amber-500 rounded-lg flex items-center justify-center font-black text-black text-sm">ID</div>
-          <span className={`font-black text-sm tracking-tighter uppercase ${isDark ? "text-white" : "text-[#064e3b]"}`}>Maurya</span>
+          <span className={`font-black text-sm tracking-tighter uppercase ${isDark ? "text-white" : "text-[#064e3b]"}`}>ResQRide</span>
         </div>
         <div className="flex items-center gap-2">
           <button onClick={toggleTheme} className={`p-2 rounded-lg text-sm ${isDark ? "bg-white/10 text-white/60" : "bg-[#d1fae5] text-[#047857]"}`}>

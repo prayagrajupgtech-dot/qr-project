@@ -14,12 +14,15 @@ export default function LoginSelectionPage({ onSelectAdmin, onSelectUser, onRegi
             ID
           </div>
           <h1 className="text-3xl sm:text-4xl font-black uppercase tracking-tight text-white">
-            MAURYA GENERATOR
+            ResQRide
           </h1>
           <p className="text-amber-500 text-xs sm:text-sm font-bold uppercase tracking-[4px]">
-            QR & ID CARD GENERATOR
+            Vehicle QR Safety System
           </p>
           <p className="text-white/40 text-xs sm:text-sm max-w-md mx-auto pt-2">
+            Scan. Connect. Protect.
+          </p>
+          <p className="text-white/40 text-xs sm:text-sm max-w-md mx-auto">
             Please select your login type to continue to the system.
           </p>
         </div>
@@ -81,7 +84,7 @@ export default function LoginSelectionPage({ onSelectAdmin, onSelectUser, onRegi
 
         {/* Footer */}
         <p className="text-[10px] font-black uppercase tracking-[3px] text-white/20">
-          Maurya & Company © Secure ID Verification Platform
+          ResQRide © Vehicle Safety Platform
         </p>
       </div>
     </div>

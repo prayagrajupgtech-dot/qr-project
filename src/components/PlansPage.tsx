@@ -97,7 +97,7 @@ export default function PlansPage() {
             setMessage("Checkout was closed before completion.");
           }
         },
-        name: "Maurya and Company",
+        name: "ResQRide",
         prefill: {
           contact: phone,
           name: name.trim()
@@ -121,8 +121,8 @@ export default function PlansPage() {
       <header className="bg-[#111827] text-white border-b-4 border-red-600">
         <div className="max-w-4xl mx-auto px-6 py-6">
           <div>
-            <p className="text-lg font-black uppercase">Maurya and Company</p>
-            <p className="text-sm font-bold text-amber-400">समस्या निवारण</p>
+            <p className="text-lg font-black uppercase">ResQRide</p>
+            <p className="text-sm font-bold text-amber-400">Scan. Connect. Protect.</p>
           </div>
         </div>
       </header>

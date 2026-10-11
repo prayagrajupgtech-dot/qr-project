@@ -1,6 +1,10 @@
-# QR and ID Card Generator
+# ResQRide
+
+ResQRide is a smart vehicle QR safety platform that allows vehicle owners to create QR-enabled emergency contact cards. In an emergency, anyone can scan the QR code to quickly access the owner's emergency contact information.
 
 React + Vite app for creating ID cards and database-backed QR verification links. Serverless functions keep the Supabase and Razorpay secrets out of the browser bundle.
+
+Tagline: **Scan. Connect. Protect.**
 
 The same server handlers are exposed as Vercel Functions under `/api/*`, so the app can run on either Vercel or Netlify.
 

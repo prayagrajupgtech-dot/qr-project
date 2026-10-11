@@ -56,7 +56,7 @@ export default function UserFormPage({
       {/* Header & Assigned Plan (Read-Only) */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-white/10 pb-6">
         <div>
-          <h2 className="text-3xl font-black tracking-tight uppercase">Maurya and Company</h2>
+          <h2 className="text-3xl font-black tracking-tight uppercase">ResQRide</h2>
           <p className="text-amber-500 text-xs font-bold uppercase tracking-widest mt-1">ID Card Generation Form</p>
         </div>
 

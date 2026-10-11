@@ -49,7 +49,7 @@ export default function AdminSidebar({ currentTab, onNavigate, onLogout }: Admin
           </div>
           <div className="min-w-0">
             <h1 className="font-black text-sm uppercase tracking-wider text-white truncate">Admin Panel</h1>
-            <p className="text-[10px] text-amber-400 font-bold uppercase tracking-widest truncate">Maurya System</p>
+            <p className="text-[10px] text-amber-400 font-bold uppercase tracking-widest truncate">ResQRide</p>
           </div>
         </div>
 

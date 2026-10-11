@@ -22,7 +22,7 @@ export default function AdminSettings() {
 
   useEffect(() => {
     const name = localStorage.getItem("maurya_admin_name") || "Administrator";
-    const email = localStorage.getItem("maurya_admin_email") || "admin@mauryagenerator.com";
+    const email = localStorage.getItem("maurya_admin_email") || "admin@resqride.com";
     setAdminName(name);
     setAdminEmail(email);
     setEditName(name);

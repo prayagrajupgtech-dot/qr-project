@@ -18,8 +18,8 @@ export async function sendOtpEmail(email: string, otp: string): Promise<{ succes
 <body style="margin:0;padding:0;background-color:#f8fafc;font-family:system-ui,-apple-system,sans-serif;">
   <div style="max-width:480px;margin:40px auto;background:#ffffff;border-radius:8px;border:1px solid #e2e8f0;overflow:hidden;">
     <div style="background:#111827;padding:24px;text-align:center;">
-      <p style="color:#ffffff;font-size:16px;font-weight:900;text-transform:uppercase;margin:0;">Maurya and Company</p>
-      <p style="color:#facc15;font-size:12px;font-weight:bold;margin:4px 0 0 0;">समस्या निवारण</p>
+      <p style="color:#ffffff;font-size:16px;font-weight:900;text-transform:uppercase;margin:0;">ResQRide</p>
+      <p style="color:#facc15;font-size:12px;font-weight:bold;margin:4px 0 0 0;">Scan. Connect. Protect.</p>
     </div>
     <div style="padding:32px 24px;text-align:center;">
       <h1 style="font-size:20px;font-weight:900;color:#0f172a;margin:0 0 16px 0;">Verify your email</h1>
@@ -46,7 +46,7 @@ export async function sendOtpEmail(email: string, otp: string): Promise<{ succes
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        from: `Maurya and Company <${fromEmail}>`,
+        from: `ResQRide <${fromEmail}>`,
         to: [email],
         subject: "Your verification code",
         html: htmlContent

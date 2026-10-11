@@ -348,7 +348,7 @@ function AppInner() {
       <AdminLayout
         currentTab={activeAdminTab}
         title={activeAdminTab.toUpperCase().replace("-", " ")}
-        subtitle="Maurya System Administrator Control Center"
+        subtitle="ResQRide Administrator Control Center"
         onNavigate={handleAdminNavigate}
         onLogout={handleAdminLogout}
       >
@@ -384,7 +384,7 @@ function AppInner() {
         )}
         {activeAdminTab === "notifications" && <AdminNotifications />}
         {activeAdminTab === "analytics" && <AdminAnalytics />}
-        {activeAdminTab === "profile" && <AdminProfile adminEmail="admin@mauryagenerator.com" />}
+        {activeAdminTab === "profile" && <AdminProfile adminEmail="admin@resqride.com" />}
         {activeAdminTab === "cards" && <AdminCardsList />}
         {activeAdminTab === "create-card" && <AdminCreateCard />}
         {activeAdminTab === "activity" && <AdminActivity />}

@@ -43,10 +43,10 @@ const IDCardBack = forwardRef<HTMLDivElement, IDCardBackProps>(({ cardNumber, su
         </svg>
       </div>
       <p className="text-[10px] tracking-widest font-black uppercase" style={{ color: "#dcfce7" }}>
-        Maurya and Company
+        ResQRide
       </p>
       <p className="text-[8px] tracking-widest font-bold" style={{ color: "#166534" }}>
-        समस्या निवारण
+        Scan. Connect. Protect.
       </p>
     </div>
 

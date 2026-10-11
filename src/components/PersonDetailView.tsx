@@ -58,9 +58,9 @@ export default function PersonDetailView({ data }: { data: VerificationData }) {
         {/* Header */}
         <div className="text-center mb-6">
           <div className="w-14 h-14 bg-amber-500 rounded-2xl flex items-center justify-center mx-auto mb-3 shadow-lg shadow-amber-500/20">
-            <span className="text-xl font-black text-black">M</span>
+            <span className="text-xl font-black text-black">R</span>
           </div>
-          <h1 className="text-lg font-black tracking-tight uppercase text-white">Maurya Generator</h1>
+          <h1 className="text-lg font-black tracking-tight uppercase text-white">ResQRide</h1>
           <p className="text-amber-500 font-bold text-[10px] mt-0.5 tracking-[3px]">VEHICLE EMERGENCY ID</p>
         </div>
 
@@ -194,7 +194,7 @@ export default function PersonDetailView({ data }: { data: VerificationData }) {
         {/* Branding */}
         <div className="text-center mt-6">
           <p className="text-[10px] text-white/20 font-bold uppercase tracking-widest">
-            Verified through Maurya Generator
+            Verified through ResQRide
           </p>
         </div>
       </div>

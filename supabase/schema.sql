@@ -1,4 +1,4 @@
--- Supabase Database Schema for QR and ID Card Generator (Admin + User Architecture)
+-- Supabase Database Schema for ResQRide (Admin + User Architecture)
 
 -- 1. Plans Table
 create table if not exists public.plans (
