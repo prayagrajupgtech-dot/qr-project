@@ -249,7 +249,7 @@ export default function UserApplicationForm() {
       // The server already returns Razorpay's smallest currency unit (paise).
       amount,
       currency: "INR",
-      name: "Maurya Generator",
+      name: "ResQRide",
       description: "Card Issuance Payment",
       order_id: orderId,
       handler: async (response: any) => {
@@ -385,6 +385,7 @@ export default function UserApplicationForm() {
     try {
       // Auto-save the draft first to make sure application exists and is up-to-date
       let appId = application?.id;
+      let saveData: any = null;
       if (!appId || (application?.status !== "submitted" && application?.status !== "completed")) {
         const body: any = {
           plan_id: selectedPlanId || null,
@@ -406,7 +407,7 @@ export default function UserApplicationForm() {
           headers: getAuthHeaders(),
           body: JSON.stringify(body),
         });
-        const saveData = await saveRes.json();
+        saveData = await saveRes.json();
         if (!saveRes.ok) {
           setError(saveData.error || "Failed to save application before payment.");
           setIssuing(false);

@@ -267,6 +267,7 @@ export default async (request: Request) => {
               // If user already has an expired card, reactivate it
               const expiredCard = existingCards.find(c => c.status === "expired" || c.plan_id === payment.plan_id);
               if (expiredCard) {
+                const supabase = getSupabaseAdmin();
                 await supabase.from("id_cards").update({
                   status: "active",
                   issued_at: issuedAt.toISOString(),
