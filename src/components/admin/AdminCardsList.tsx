@@ -19,6 +19,83 @@ interface CardRecord {
   user_id?: string | null;
 }
 
+// Print stylesheet injected into the dedicated print document.
+// Page 1 = front + back card. Page 2 = QR code. Each `.print-page` is a
+// fixed-height A4 sheet with `overflow: hidden`, so content can never spill
+// onto a third page.
+const PRINT_CSS = `
+@page { size: A4 portrait; margin: 12mm; }
+
+html, body {
+  margin: 0 !important;
+  padding: 0 !important;
+  background: #fff !important;
+}
+
+#admin-card-print {
+  display: block !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  background: #fff !important;
+}
+
+/* Only the QR page's heading/caption show in print, never on screen. */
+.admin-print-only { display: none !important; }
+@media print { .admin-print-only { display: block !important; } }
+
+.print-page {
+  box-sizing: border-box !important;
+  width: 180mm !important;
+  height: 264mm !important;
+  margin: 0 auto !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 8mm !important;
+  break-inside: avoid !important;
+  page-break-inside: avoid !important;
+}
+/* Start the QR on the second sheet, and never emit a trailing blank page. */
+.print-page + .print-page {
+  break-before: page !important;
+  page-break-before: always !important;
+}
+.print-page:last-child {
+  break-after: auto !important;
+  page-break-after: auto !important;
+}
+
+.print-card {
+  width: 500px !important;
+  max-width: 100% !important;
+  overflow: visible !important;
+  margin: 0 !important;
+  break-inside: avoid !important;
+  page-break-inside: avoid !important;
+}
+
+.print-qr-page { gap: 6mm !important; }
+
+.admin-print-qr-box {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+.admin-print-qr-box img,
+.admin-print-qr-box canvas {
+  width: 58mm !important;
+  height: 58mm !important;
+}
+
+* {
+  -webkit-print-color-adjust: exact !important;
+  print-color-adjust: exact !important;
+}
+`;
+
 export default function AdminCardsList() {
   const { theme } = useTheme();
   const isDark = theme === "dark";
@@ -92,16 +169,101 @@ export default function AdminCardsList() {
     );
   });
 
-  // Print in a dedicated window: only front card (page 1) + back card (page 1)
-  // + QR (page 2). No admin UI, no cut content.
-  const handlePrint = () => {
-    const node = document.getElementById("admin-card-print");
-    if (!node) {
-      window.print();
+  // Collects every stylesheet the app is using. In dev Vite injects CSS as
+  // <style> tags; in production builds the CSS is a <link rel="stylesheet">.
+  // Both must be copied or the print document renders unstyled (the original
+  // cause of the card spilling across ~13 pages).
+  const collectAppCss = async () => {
+    const parts: string[] = [];
+    document.querySelectorAll("style").forEach(s => {
+      if (s.textContent) parts.push(s.textContent);
+    });
+    const links = Array.from(document.querySelectorAll('link[rel="stylesheet"]')) as HTMLLinkElement[];
+    await Promise.all(links.map(async link => {
+      try {
+        const res = await fetch(link.href);
+        if (res.ok) parts.push(await res.text());
+      } catch {
+        /* ignore stylesheets we cannot read */
+      }
+    }));
+    return parts.join("\n");
+  };
+
+  const waitForImages = (win: Window) => new Promise<void>(resolve => {
+    const imgs = Array.from(win.document.images || []);
+    const pending = imgs.filter(img => !img.complete);
+    if (pending.length === 0) {
+      resolve();
       return;
     }
+    let remaining = pending.length;
+    let settled = false;
+    const done = () => {
+      remaining -= 1;
+      if (remaining <= 0 && !settled) {
+        settled = true;
+        resolve();
+      }
+    };
+    pending.forEach(img => {
+      img.addEventListener("load", done, { once: true });
+      img.addEventListener("error", done, { once: true });
+    });
+    // Safety net so a broken image URL can never block the print dialog.
+    setTimeout(() => {
+      if (!settled) {
+        settled = true;
+        resolve();
+      }
+    }, 3000);
+  });
+
+  // Builds a fully self-contained print document and prints it in an isolated
+  // context so the dashboard/sidebar/table are never part of the print job.
+  const printDocument = async (html: string) => {
+    // Preferred: a dedicated window.
+    const w = window.open("", "_blank", "width=900,height=700");
+    if (w) {
+      w.document.write(html);
+      w.document.close();
+      await waitForImages(w);
+      w.focus();
+      w.print();
+      return;
+    }
+    // Fallback: a hidden iframe, used when the popup is blocked.
+    const frame = document.createElement("iframe");
+    frame.setAttribute("aria-hidden", "true");
+    frame.style.cssText = "position:fixed;right:0;bottom:0;width:0;height:0;border:0;visibility:hidden;";
+    document.body.appendChild(frame);
+    const fdoc = frame.contentDocument;
+    if (!fdoc) {
+      frame.remove();
+      return;
+    }
+    fdoc.open();
+    fdoc.write(html);
+    fdoc.close();
+    await waitForImages(frame.contentWindow as Window);
+    const fwin = frame.contentWindow;
+    if (fwin) {
+      fwin.focus();
+      fwin.print();
+    }
+    // Keep the frame alive long enough for the print dialog, then drop it.
+    setTimeout(() => frame.remove(), 60000);
+  };
+
+  // Prints the selected card as exactly two pages:
+  //   page 1 = card front + card back, page 2 = the QR code.
+  const handlePrint = async () => {
+    const node = document.getElementById("admin-card-print");
+    if (!node) return;
     const clone = node.cloneNode(true) as HTMLElement;
-    // Canvas (QR) does not survive document.write - convert to image first.
+
+    // Canvas (QR codes) do not survive document.write - convert to <img>.
+    // Keep the canvas' intrinsic resolution (sharp QR) at its display size.
     const origCanvases = node.querySelectorAll("canvas");
     const cloneCanvases = clone.querySelectorAll("canvas");
     cloneCanvases.forEach((c, i) => {
@@ -110,37 +272,30 @@ export default function AdminCardsList() {
       try {
         const img = document.createElement("img");
         img.src = orig.toDataURL("image/png");
+        const displayW = orig.clientWidth || orig.width;
+        const displayH = orig.clientHeight || orig.height;
         img.width = orig.width;
         img.height = orig.height;
-        img.style.width = `${orig.width}px`;
-        img.style.height = `${orig.height}px`;
+        img.style.width = `${displayW}px`;
+        img.style.height = `${displayH}px`;
         c.replaceWith(img);
       } catch {
         /* keep canvas as-is on failure */
       }
     });
-    // Our Tailwind CSS is inlined in <style> tags (single-file build) - reuse it.
-    const styles = Array.from(document.querySelectorAll("style")).map(s => s.outerHTML).join("\n");
-    const printCss = `<style>
-      body { background: #fff !important; margin: 0; padding: 16px; }
-      #admin-card-print { display: flex; flex-direction: column; align-items: center; gap: 24px; }
-      #admin-card-print > div { margin: 0 auto; break-inside: avoid; page-break-inside: avoid; }
-      #admin-card-print .overflow-x-auto { overflow: visible !important; }
-      #admin-card-print > div.print-page { break-after: page; page-break-after: always; }
-      #admin-card-print > div.print-page:last-child { break-after: auto; page-break-after: auto; }
-      * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
-    </style>`;
-    const w = window.open("", "_blank", "width=900,height=700");
-    if (!w) {
-      window.print();
-      return;
-    }
-    w.document.write(`<!doctype html><html><head><title>ID Card Print - ${viewCard?.card_number || ""}</title>${styles}${printCss}</head><body>${clone.outerHTML}</body></html>`);
-    w.document.close();
-    w.focus();
-    setTimeout(() => {
-      w.print();
-    }, 600);
+
+    const appCss = await collectAppCss();
+    const html = `<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>ResQRide Card - ${viewCard?.card_number || ""}</title>
+<style>${appCss}</style>
+<style>${PRINT_CSS}</style>
+</head>
+<body>${clone.outerHTML}</body>
+</html>`;
+    await printDocument(html);
   };
 
   const cardStyle = isDark ? "bg-white/5 border-white/10" : "bg-white border-[#bbf7d0]";
@@ -269,32 +424,46 @@ export default function AdminCardsList() {
               </button>
             </div>
 
-            {/* Printable card area - front+back on page 1, QR on page 2 */}
-            <div id="admin-card-print" className="flex flex-col items-center gap-6">
-              <div className="w-full max-w-[500px] overflow-x-auto">
-                <div className="min-w-[500px]">
-                <IDCard
-                  data={{
-                    name: viewCard.name,
-                    phone: viewCard.phone,
-                    parentPhone: viewCard.parent_phone || undefined,
-                    photo: viewCard.photo_url || "",
-                    signature: "",
-                    idNumber: viewCard.card_number,
-                    dob: viewCard.date_of_birth,
-                    address: viewCard.address
-                  }}
-                />
+            {/* Printable area — page 1: front + back, page 2: QR */}
+            <div id="admin-card-print" className="flex flex-col items-center gap-6 w-full">
+              <section className="print-page w-full flex flex-col items-center gap-6">
+                <div className="print-card w-full max-w-[500px] overflow-x-auto">
+                  <div className="min-w-[500px]">
+                    <IDCard
+                      data={{
+                        name: viewCard.name,
+                        phone: viewCard.phone,
+                        parentPhone: viewCard.parent_phone || undefined,
+                        photo: viewCard.photo_url || "",
+                        signature: "",
+                        idNumber: viewCard.card_number,
+                        dob: viewCard.date_of_birth,
+                        address: viewCard.address
+                      }}
+                    />
+                  </div>
                 </div>
-              </div>
-              <div className="print-page w-full max-w-[500px] overflow-x-auto">
-                <div className="min-w-[500px]">
-                <IDCardBack cardNumber={viewCard.card_number} subscriptionUrl={`${getPublicBaseUrl()}#/home`} />
+                <div className="print-card w-full max-w-[500px] overflow-x-auto">
+                  <div className="min-w-[500px]">
+                    <IDCardBack cardNumber={viewCard.card_number} subscriptionUrl={`${getPublicBaseUrl()}#/home`} />
+                  </div>
                 </div>
-              </div>
-              <div className="print-page bg-white p-4 rounded-2xl">
-                <QRCodeCanvas value={`${getPublicBaseUrl()}#/verify/${viewCard.card_number}`} size={140} />
-              </div>
+              </section>
+
+              <section className="print-page print-qr-page bg-white p-4 rounded-2xl flex flex-col items-center justify-center gap-3">
+                <p className="admin-print-only text-lg font-black uppercase tracking-[0.25em] text-slate-900">ResQRide</p>
+                <p className="admin-print-only text-[10px] font-black uppercase tracking-[0.35em] text-red-600">QR Code</p>
+                <div className="admin-print-qr-box">
+                  <QRCodeCanvas
+                    value={`${getPublicBaseUrl()}#/verify/${viewCard.card_number}`}
+                    size={280}
+                    level="M"
+                    marginSize={2}
+                    style={{ width: 140, height: 140, display: "block" }}
+                  />
+                </div>
+                <p className="admin-print-only text-[9px] font-black uppercase tracking-[0.2em] text-slate-500">Scan for emergency contact</p>
+              </section>
             </div>
 
             {/* Details */}

@@ -220,59 +220,19 @@ html.light [style*="color: #166534"] {
   color: #166534 !important;
 }
 
-/* ========= PRINT: only the admin card preview prints ========= */
+/* Elements that only appear in the dedicated print document (QR page
+   heading/caption). Hidden on screen so the admin modal is unchanged. */
+.admin-print-only {
+  display: none;
+}
+
+/* ========= PRINT =========
+   The admin "Print Card" button renders a dedicated, self-contained document
+   (front + back on page 1, QR on page 2), so the dashboard is never the print
+   target. This rule is a safety net: a bare Ctrl+P must not dump the whole
+   admin UI across a dozen pages. */
 @media print {
-  body * {
-    visibility: hidden;
-  }
-  #admin-card-print,
-  #admin-card-print * {
-    visibility: visible;
-    -webkit-print-color-adjust: exact !important;
-    print-color-adjust: exact !important;
-  }
-  /* Neutralize the fixed modal / flex / scroll wrappers - they block page breaks */
-  .print-modal-overlay,
-  .print-modal-scroll,
-  .print-modal-box {
-    position: static !important;
-    overflow: visible !important;
-    display: block !important;
-    background: #fff !important;
-    padding: 0 !important;
-    margin: 0 !important;
-    border: none !important;
-    min-height: auto !important;
-    max-width: none !important;
-  }
-  #admin-card-print {
-    position: static;
-    display: block;
-    margin: 0 auto;
-    padding: 0;
-    background: #fff;
-  }
-  #admin-card-print .overflow-x-auto {
-    overflow: visible !important;
-  }
-  #admin-card-print > div {
-    page-break-inside: avoid;
-    break-inside: avoid;
-    margin-left: auto;
-    margin-right: auto;
-  }
-  /* Back card ends page 1 -> QR goes on page 2. Front stays with back. */
-  #admin-card-print > div.print-page {
-    break-after: page;
-    page-break-after: always;
-    margin-left: auto;
-    margin-right: auto;
-  }
-  #admin-card-print > div.print-page:last-child {
-    break-after: auto;
-    page-break-after: auto;
-  }
-  .no-print {
+  #root {
     display: none !important;
   }
 }
