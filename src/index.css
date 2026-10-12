@@ -75,7 +75,9 @@
 .login-action-orange { background: linear-gradient(90deg, #ff741b, #f34d10); box-shadow: 0 5px 16px rgba(242,93,20,.25); }
 .login-register { border: 1px solid #d8e4f2; color: #f4f7fb; }
 @media (max-width: 639px) {
-  .login-scene { background-attachment: fixed; background-position: 76% center; background-size: auto 100vh; }
+  /* On portrait screens, fit the whole scene across the viewport so the sunset,
+     mountain range, and car stay in frame instead of zooming into one side. */
+  .login-scene { background-attachment: fixed; background-position: center top; background-size: 100vw auto; }
   .login-card { min-height: 225px; }
 }
 
@@ -233,7 +235,7 @@
 .theme-mode-toggle:focus-visible { outline: 2px solid #38a5ff; outline-offset: 3px; }
 .theme-mode-toggle > span:first-child { font-size: 14px; }
 @media (max-width: 639px) {
-  .auth-scene { background-attachment: fixed; background-position: 73% center; background-size: auto 100vh; }
+  .auth-scene { background-attachment: fixed; background-position: center top; background-size: 100vw auto; }
   .auth-scene-content { padding: 18px 12px; }
   .auth-layout { gap: 12px; }
   .auth-panel { border-radius: 18px; padding: 20px 18px; }
@@ -294,7 +296,7 @@
   border-color: rgba(207, 224, 246, .18);
 }
 @media (max-width: 639px) {
-  .admin-app { background-attachment: fixed; background-position: 76% center; background-size: auto 100vh; }
+  .admin-app { background-attachment: fixed; background-position: center top; background-size: 100vw auto; }
   .admin-app::before { background: rgba(2, 8, 20, .48); }
 }
 
@@ -332,7 +334,11 @@ html.light .user-app {
   html.dark .login-scene,
   html.dark .auth-scene,
   html.dark .admin-app,
-  html.dark .user-app { background-position: 76% center; }
+  html.dark .user-app { background-position: center top; background-size: 100vw auto; }
+  html.light .login-scene,
+  html.light .auth-scene,
+  html.light .admin-app,
+  html.light .user-app { background-position: center top; background-size: 100vw auto; }
 }
 
 /* ========= CUSTOM FONTS & ANIMATIONS ========= */
@@ -814,3 +820,25 @@ html.light .login-card { color: #f5f8fc !important; }
 }
 .user-app[data-theme="light"] main input::placeholder { color: #60796c !important; }
 .user-app[data-theme="light"] main [class*="text-white/"] { color: #466354 !important; }
+
+/* Keep the scenery visible through content panels on small portrait screens. */
+@media (max-width: 639px) {
+  .admin-app main [class*="bg-white/5"],
+  .admin-app main [class*="bg-black/30"],
+  .admin-app main [class*="bg-black/20"],
+  .user-app[data-theme="dark"] main [class*="bg-white/5"],
+  .user-app[data-theme="dark"] main [class*="bg-black/30"],
+  .user-app[data-theme="dark"] main [class*="bg-black/20"] {
+    background-color: rgba(3, 14, 31, .76) !important;
+    backdrop-filter: blur(8px);
+  }
+  .admin-app[data-theme="light"] main [class*="bg-white/5"],
+  .admin-app[data-theme="light"] main [class*="bg-black/30"],
+  .admin-app[data-theme="light"] main [class*="bg-black/20"],
+  .user-app[data-theme="light"] main [class*="bg-white/5"],
+  .user-app[data-theme="light"] main [class*="bg-black/30"],
+  .user-app[data-theme="light"] main [class*="bg-black/20"] {
+    background-color: rgba(240, 253, 244, .82) !important;
+    backdrop-filter: blur(8px);
+  }
+}
