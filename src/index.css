@@ -267,11 +267,11 @@
   backdrop-filter: blur(18px);
 }
 .admin-app main [class*="bg-white/5"] {
-  background-color: rgba(5, 17, 35, .83) !important;
+  background-color: rgba(4, 16, 34, .96) !important;
 }
 .admin-app main [class*="bg-black/30"],
 .admin-app main [class*="bg-black/20"] {
-  background-color: rgba(3, 12, 27, .72) !important;
+  background-color: rgba(2, 10, 24, .9) !important;
 }
 .admin-app main [class*="border-white/10"],
 .admin-app main [class*="border-white/5"] {
@@ -762,3 +762,55 @@ html.light .login-card { color: #f5f8fc !important; }
   color: #064e3b !important;
 }
 .admin-app[data-theme="light"] main input::placeholder { color: #527565 !important; }
+
+.admin-app[data-theme="dark"] main {
+  border-radius: 24px;
+  background: rgba(3, 12, 27, .28);
+  backdrop-filter: blur(3px);
+}
+.admin-app[data-theme="dark"] main [class*="text-white/20"],
+.admin-app[data-theme="dark"] main [class*="text-white/30"] { color: #a9bdd5 !important; }
+.admin-app[data-theme="dark"] main [class*="text-white/40"],
+.admin-app[data-theme="dark"] main [class*="text-white/50"] { color: #c3d2e5 !important; }
+.admin-app[data-theme="dark"] main [class*="text-white/60"],
+.admin-app[data-theme="dark"] main [class*="text-white/70"] { color: #e2eaf5 !important; }
+.admin-app[data-theme="light"] main {
+  border-radius: 24px;
+  background: rgba(240, 253, 244, .28);
+  backdrop-filter: blur(3px);
+}
+
+/* Give user profile, card, and dashboard content solid enough surfaces above the photo. */
+.user-app[data-theme="dark"] main [class*="bg-white/5"] {
+  background-color: rgba(4, 16, 34, .96) !important;
+  border-color: rgba(144, 184, 228, .24) !important;
+}
+.user-app[data-theme="dark"] main [class*="bg-black/30"],
+.user-app[data-theme="dark"] main [class*="bg-black/20"] {
+  background-color: rgba(2, 10, 24, .88) !important;
+  border-color: rgba(144, 184, 228, .2) !important;
+}
+.user-app[data-theme="dark"] main [class*="text-white/20"],
+.user-app[data-theme="dark"] main [class*="text-white/30"] { color: #a9bdd5 !important; }
+.user-app[data-theme="dark"] main [class*="text-white/40"],
+.user-app[data-theme="dark"] main [class*="text-white/50"] { color: #c3d2e5 !important; }
+.user-app[data-theme="dark"] main [class*="text-white/60"],
+.user-app[data-theme="dark"] main [class*="text-white/70"] { color: #e2eaf5 !important; }
+.user-app[data-theme="dark"] header button[class*="text-white/40"] { color: #c3d2e5 !important; }
+
+.user-app[data-theme="light"] main [class*="bg-white/5"],
+.user-app[data-theme="light"] main [class*="bg-black/30"],
+.user-app[data-theme="light"] main [class*="bg-black/20"] {
+  background-color: rgba(255, 255, 255, .96) !important;
+  border-color: rgba(25, 94, 66, .2) !important;
+  box-shadow: 0 14px 38px rgba(7, 31, 54, .12);
+}
+.user-app[data-theme="light"] main input,
+.user-app[data-theme="light"] main select,
+.user-app[data-theme="light"] main textarea {
+  background-color: #fff !important;
+  border-color: #9bb9a9 !important;
+  color: #173b2c !important;
+}
+.user-app[data-theme="light"] main input::placeholder { color: #60796c !important; }
+.user-app[data-theme="light"] main [class*="text-white/"] { color: #466354 !important; }
