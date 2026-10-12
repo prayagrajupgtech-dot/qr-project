@@ -1,4 +1,5 @@
 import { FormEvent, useState } from "react";
+import UserAuthShell from "./auth/UserAuthShell";
 
 interface AdminLoginProps {
   onAuthenticated: () => void;
@@ -41,13 +42,13 @@ export default function AdminLogin({ onAuthenticated }: AdminLoginProps) {
   };
 
   return (
-    <div className="min-h-screen bg-[#020617] text-white flex items-center justify-center p-6 selection:bg-amber-500/30">
+    <UserAuthShell>
       <div className="w-full max-w-sm space-y-4">
         {/* Admin Sign In Form */}
-        <form onSubmit={handleSubmit} className="border border-white/10 bg-white/5 rounded-[2.5rem] p-8 shadow-2xl space-y-4">
+        <form onSubmit={handleSubmit} className="auth-panel space-y-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-amber-500" />
+              <span className="w-2 h-2 rounded-full bg-orange-500" />
               <p className="text-xs font-black uppercase tracking-[3px] text-amber-500">Restricted Admin Access</p>
             </div>
             <button
@@ -75,7 +76,7 @@ export default function AdminLogin({ onAuthenticated }: AdminLoginProps) {
               value={email}
               onChange={e => setEmail(e.target.value)}
               placeholder="admin@example.com"
-              className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-xs font-bold outline-none focus:border-amber-500/60"
+              className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-xs font-bold outline-none focus:border-orange-500/60"
             />
           </div>
 
@@ -83,7 +84,7 @@ export default function AdminLogin({ onAuthenticated }: AdminLoginProps) {
             <label className="block text-[10px] font-black text-white/40 uppercase tracking-[3px] mb-1">
               Password
             </label>
-            <div className="flex items-center bg-white/5 border border-white/10 rounded-xl overflow-hidden focus-within:border-amber-500/60 transition-colors">
+            <div className="flex items-center bg-white/5 border border-white/10 rounded-xl overflow-hidden focus-within:border-orange-500/60 transition-colors">
               <input
                 autoComplete="current-password"
                 type={showPass ? "text" : "password"}
@@ -103,7 +104,7 @@ export default function AdminLogin({ onAuthenticated }: AdminLoginProps) {
           <button
             type="submit"
             disabled={!password || isSubmitting}
-            className="w-full bg-amber-500 text-black py-3.5 rounded-xl font-black text-xs uppercase tracking-widest hover:bg-amber-400 transition-all shadow-lg shadow-amber-500/20 disabled:cursor-wait disabled:opacity-50 mt-2"
+            className="w-full bg-orange-500 text-white py-3.5 rounded-xl font-black text-xs uppercase tracking-widest hover:bg-orange-400 transition-all shadow-lg shadow-orange-500/20 disabled:cursor-wait disabled:opacity-50 mt-2"
           >
             {isSubmitting ? "Authenticating..." : "Admin Login"}
           </button>
@@ -119,6 +120,6 @@ export default function AdminLogin({ onAuthenticated }: AdminLoginProps) {
           </button>
         </div>
       </div>
-    </div>
+    </UserAuthShell>
   );
 }

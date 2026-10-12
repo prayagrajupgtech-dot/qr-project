@@ -1,6 +1,9 @@
 import { FormEvent, useState } from "react";
+import { useTheme } from "../App";
+import ThemeModeButton from "./ThemeModeButton";
 
 export default function SetupPasswordPage({ userId, email }: { userId: string; email: string }) {
+  const { theme, toggleTheme } = useTheme();
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showNewPass, setShowNewPass] = useState(false);
@@ -48,9 +51,10 @@ export default function SetupPasswordPage({ userId, email }: { userId: string; e
 
   if (success) {
     return (
-      <div className="min-h-screen bg-[#020617] text-white flex items-center justify-center p-6 selection:bg-amber-500/30">
+      <div className="auth-scene min-h-screen bg-[#020617] text-white flex items-center justify-center p-6 selection:bg-amber-500/30">
+        <ThemeModeButton isDark={theme === "dark"} onToggle={toggleTheme} />
         <div className="w-full max-w-md space-y-6">
-          <div className="border border-white/10 bg-white/5 rounded-[2.5rem] p-8 shadow-2xl text-center space-y-6">
+          <div className="auth-panel text-center space-y-6">
             <div className="w-16 h-16 bg-emerald-500 rounded-full flex items-center justify-center mx-auto">
               <svg viewBox="0 0 24 24" className="w-8 h-8 text-white" fill="currentColor">
                 <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
@@ -76,9 +80,10 @@ export default function SetupPasswordPage({ userId, email }: { userId: string; e
   }
 
   return (
-    <div className="min-h-screen bg-[#020617] text-white flex items-center justify-center p-6 selection:bg-amber-500/30">
+    <div className="auth-scene min-h-screen bg-[#020617] text-white flex items-center justify-center p-6 selection:bg-amber-500/30">
+      <ThemeModeButton isDark={theme === "dark"} onToggle={toggleTheme} />
       <div className="w-full max-w-md space-y-6">
-        <div className="border border-white/10 bg-white/5 rounded-[2.5rem] p-8 shadow-2xl space-y-6">
+        <div className="auth-panel space-y-6">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-xs font-black uppercase tracking-[3px] text-amber-500">Account Setup</p>

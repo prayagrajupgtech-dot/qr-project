@@ -1,5 +1,340 @@
 @import "tailwindcss";
 
+/* Scenic access page */
+.login-scene {
+  position: relative;
+  isolation: isolate;
+  min-height: 100vh;
+  background-color: #061327;
+  background-image: url('/resqride-login-background.png');
+  background-position: center 57%;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  font-family: Inter, system-ui, sans-serif;
+}
+.login-scene-shade {
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(0deg, rgba(1, 7, 17, .10), transparent 55%, rgba(1, 7, 17, .06));
+}
+.login-card {
+  position: relative;
+  display: flex;
+  min-height: 242px;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid;
+  border-radius: 14px;
+  padding: 12px 16px 13px;
+  background: linear-gradient(145deg, rgba(5, 19, 39, .94), rgba(2, 11, 26, .88));
+  box-shadow: 0 16px 38px rgba(0,0,0,.26), inset 0 1px rgba(255,255,255,.04);
+  backdrop-filter: blur(8px);
+}
+.login-card-blue { border-color: #0786ff; }
+.login-card-orange { border-color: #f26718; }
+.login-card-icon {
+  display: grid;
+  width: 37px;
+  height: 37px;
+  place-items: center;
+  border: 1px solid currentColor;
+  border-radius: 50%;
+  box-shadow: 0 0 14px currentColor;
+}
+.login-pill {
+  margin-top: 3px;
+  border: 1px solid currentColor;
+  border-radius: 999px;
+  padding: 2px 7px;
+  font-size: 8px;
+  line-height: 1.2;
+  text-transform: uppercase;
+}
+.login-check-blue li span { color: #38a5ff; font-weight: 900; }
+.login-check-orange li span { color: #ff7925; font-weight: 900; }
+.login-action {
+  display: flex;
+  width: 100%;
+  height: 30px;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  border-radius: 999px;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  transition: filter .18s ease, transform .18s ease;
+}
+.login-action:hover { filter: brightness(1.13); transform: translateY(-1px); }
+.login-action span { font-size: 15px; font-weight: 400; line-height: 1; }
+.login-action-blue { background: linear-gradient(90deg, #0789ff, #0756e7); box-shadow: 0 5px 16px rgba(0,106,255,.25); }
+.login-action-orange { background: linear-gradient(90deg, #ff741b, #f34d10); box-shadow: 0 5px 16px rgba(242,93,20,.25); }
+.login-register { border: 1px solid #d8e4f2; color: #f4f7fb; }
+@media (max-width: 639px) {
+  .login-scene { background-attachment: fixed; background-position: 76% center; background-size: auto 100vh; }
+  .login-card { min-height: 225px; }
+}
+
+/* Shared user login and registration visual system */
+.auth-scene {
+  position: relative;
+  isolation: isolate;
+  background: #071327 url('/resqride-login-background.png') center 56% / cover fixed no-repeat;
+  font-family: Inter, system-ui, sans-serif;
+}
+.auth-scene::before {
+  position: fixed;
+  z-index: -1;
+  inset: 0;
+  background: linear-gradient(90deg, rgba(2, 8, 20, .22), rgba(2, 8, 20, .08) 50%, rgba(2, 8, 20, .22)), linear-gradient(0deg, rgba(2, 8, 20, .22), transparent 70%);
+  content: "";
+  pointer-events: none;
+}
+.auth-scene-content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  min-height: 100vh;
+  justify-content: center;
+  padding: 28px 16px;
+}
+.auth-layout {
+  display: flex;
+  width: 100%;
+  max-width: 480px;
+  flex-direction: column;
+  justify-content: center;
+  gap: 16px;
+  margin: auto;
+}
+.auth-brand {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 4px 0;
+}
+.auth-brand-mark {
+  display: grid;
+  width: 42px;
+  height: 46px;
+  flex: none;
+  place-items: center;
+  filter: drop-shadow(0 4px 10px rgba(0, 125, 255, .3));
+}
+.auth-brand-mark svg { width: 36px; height: 41px; }
+.auth-brand-name {
+  color: #fff;
+  font-family: Manrope, Inter, sans-serif;
+  font-size: 27px;
+  font-style: italic;
+  font-weight: 900;
+  letter-spacing: -1.3px;
+  line-height: 1;
+}
+.auth-brand-name span { color: #fb8735; }
+.auth-brand-tagline {
+  margin-top: 6px;
+  color: rgba(226, 237, 250, .82);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+}
+.auth-panel {
+  border: 1px solid rgba(251, 130, 49, .6);
+  border-radius: 22px;
+  background: linear-gradient(145deg, rgba(5, 17, 35, .94), rgba(4, 13, 28, .91));
+  padding: 26px;
+  box-shadow: 0 24px 70px rgba(0, 0, 0, .42), inset 0 1px rgba(255, 255, 255, .05);
+  backdrop-filter: blur(12px);
+}
+.auth-panel input,
+.auth-panel select {
+  min-height: 44px;
+  border-color: rgba(203, 218, 238, .17) !important;
+  border-radius: 11px;
+  background-color: rgba(224, 235, 250, .075) !important;
+  color: #f5f8fc !important;
+  transition: border-color .18s ease, box-shadow .18s ease, background-color .18s ease;
+}
+.auth-panel input::placeholder { color: rgba(205, 218, 237, .46); }
+.auth-panel input:focus,
+.auth-panel select:focus {
+  border-color: rgba(251, 130, 49, .86) !important;
+  background-color: rgba(224, 235, 250, .11) !important;
+  box-shadow: 0 0 0 3px rgba(251, 130, 49, .13);
+}
+.auth-panel input:-webkit-autofill,
+.auth-panel input:-webkit-autofill:hover,
+.auth-panel input:-webkit-autofill:focus {
+  -webkit-text-fill-color: #f5f8fc !important;
+  -webkit-box-shadow: 0 0 0 1000px #172438 inset !important;
+  caret-color: #f5f8fc;
+}
+.auth-panel input[readonly] {
+  border-color: rgba(52, 211, 153, .38) !important;
+  background-color: rgba(16, 185, 129, .13) !important;
+}
+.auth-panel label { color: rgba(220, 231, 245, .67) !important; }
+.auth-panel .text-amber-500,
+.auth-panel .text-amber-400 { color: #ff984f !important; }
+.auth-panel .bg-amber-500 {
+  background: linear-gradient(90deg, #ff7a1a, #f04d12) !important;
+  color: #fff !important;
+}
+.auth-panel button[type="submit"] {
+  min-height: 46px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #ff7a1a, #f04d12);
+  color: white;
+  box-shadow: 0 8px 22px rgba(240, 77, 18, .22);
+  transition: filter .18s ease, transform .18s ease;
+}
+.auth-panel button[type="submit"]:hover { filter: brightness(1.1); transform: translateY(-1px); }
+.auth-panel button[type="submit"]:disabled { cursor: wait; opacity: .6; }
+.auth-panel > div:first-child > button:last-child,
+.auth-panel > div:first-child > button:last-child:hover { color: rgba(218, 230, 245, .65); }
+.auth-brand-footer {
+  color: rgba(230, 239, 249, .76);
+  font-size: 10px;
+  line-height: 1.6;
+  text-align: center;
+  text-shadow: 0 1px 8px rgba(0, 0, 0, .8);
+}
+.auth-brand-footer > span:first-child { color: #ffa15c; font-weight: 800; }
+.auth-footer-divider { padding: 0 8px; color: rgba(255, 255, 255, .65); }
+.theme-mode-toggle {
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  z-index: 100;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid rgba(203, 218, 238, .22);
+  border-radius: 999px;
+  padding: 9px 13px;
+  background: rgba(4, 15, 31, .84);
+  color: #f5f8fc;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, .22);
+  backdrop-filter: blur(12px);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  transition: border-color .18s ease, background .18s ease, transform .18s ease;
+}
+.theme-mode-toggle:hover { border-color: rgba(56, 165, 255, .7); transform: translateY(-1px); }
+.theme-mode-toggle:focus-visible { outline: 2px solid #38a5ff; outline-offset: 3px; }
+.theme-mode-toggle > span:first-child { font-size: 14px; }
+@media (max-width: 639px) {
+  .auth-scene { background-attachment: fixed; background-position: 73% center; background-size: auto 100vh; }
+  .auth-scene-content { padding: 18px 12px; }
+  .auth-layout { gap: 12px; }
+  .auth-panel { border-radius: 18px; padding: 20px 18px; }
+  .auth-brand-footer { max-width: 320px; align-self: center; }
+}
+
+/* Admin area shares the same ResQRide sunset scene and glass surfaces. */
+.admin-app {
+  position: relative;
+  isolation: isolate;
+  min-height: 100vh;
+  background: #071327 url('/resqride-login-background.png') center 55% / cover fixed no-repeat;
+  font-family: Inter, system-ui, sans-serif;
+}
+.admin-app::before {
+  position: fixed;
+  z-index: -1;
+  inset: 0;
+  content: "";
+  pointer-events: none;
+  background: linear-gradient(90deg, rgba(2, 8, 20, .34), rgba(2, 8, 20, .16) 52%, rgba(2, 8, 20, .34)), linear-gradient(0deg, rgba(2, 8, 20, .24), rgba(2, 8, 20, .12));
+}
+.admin-app > aside {
+  background-color: rgba(4, 15, 31, .94) !important;
+  border-color: rgba(207, 224, 246, .13) !important;
+  backdrop-filter: blur(18px);
+}
+.admin-app > div > header {
+  background-color: rgba(5, 17, 35, .88) !important;
+  border-color: rgba(207, 224, 246, .13) !important;
+  backdrop-filter: blur(18px);
+}
+.admin-app main [class*="bg-white/5"] {
+  background-color: rgba(5, 17, 35, .83) !important;
+}
+.admin-app main [class*="bg-black/30"],
+.admin-app main [class*="bg-black/20"] {
+  background-color: rgba(3, 12, 27, .72) !important;
+}
+.admin-app main [class*="border-white/10"],
+.admin-app main [class*="border-white/5"] {
+  border-color: rgba(207, 224, 246, .15) !important;
+}
+.admin-app aside button.bg-amber-500,
+.admin-app > button.bg-amber-500 {
+  background: linear-gradient(100deg, #0789ff, #0756e7) !important;
+  color: #fff !important;
+  box-shadow: 0 8px 22px rgba(0, 106, 255, .25);
+}
+.admin-app .text-amber-400,
+.admin-app .text-amber-500 { color: #ff984f !important; }
+.admin-app .text-emerald-400 { color: #42b7ff !important; }
+.admin-app .bg-amber-500:not(button) { background-color: #fb8735 !important; }
+.admin-app main input,
+.admin-app main select,
+.admin-app main textarea {
+  background-color: rgba(3, 12, 27, .84);
+  border-color: rgba(207, 224, 246, .18);
+}
+@media (max-width: 639px) {
+  .admin-app { background-attachment: fixed; background-position: 76% center; background-size: auto 100vh; }
+  .admin-app::before { background: rgba(2, 8, 20, .48); }
+}
+
+/* Dark mode uses the supplied night drive; light mode keeps the sunset scene. */
+html.dark .login-scene,
+html.dark .auth-scene,
+html.dark .admin-app,
+html.dark .user-app {
+  background-image: url('/resqride-night-background.png') !important;
+  background-position: center 55%;
+  background-size: cover;
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+}
+/* The supplied night artwork already contains the moon and stars. */
+html.dark .login-scene::after,
+html.dark .auth-scene::after,
+html.dark .admin-app::after,
+html.dark .user-app::after {
+  display: none;
+}
+html.dark .auth-scene-content { z-index: 2; }
+html.dark .admin-app::before { background: linear-gradient(90deg, rgba(2, 8, 20, .18), rgba(2, 8, 20, .08) 52%, rgba(2, 8, 20, .18)); }
+html.light .admin-app::before { background: rgba(2, 8, 20, .08); }
+html.dark .user-app {
+  background-color: #071327 !important;
+}
+html.light .user-app {
+  background-image: url('/resqride-login-background.png') !important;
+  background-position: center 55%;
+  background-size: cover;
+  background-attachment: fixed;
+}
+@media (max-width: 639px) {
+  html.dark .login-scene,
+  html.dark .auth-scene,
+  html.dark .admin-app,
+  html.dark .user-app { background-position: 76% center; }
+}
+
 /* ========= CUSTOM FONTS & ANIMATIONS ========= */
 @theme {
   --font-manrope: "Manrope", "Inter", system-ui, sans-serif;
@@ -298,3 +633,132 @@ html.light [style*="color: #166534"] {
     display: none !important;
   }
 }
+
+/* In dark mode, the former amber/yellow UI accent becomes ResQRide blue. */
+html.dark [class*="text-amber-"],
+html.dark [class*="text-yellow-"] {
+  color: #55aaff !important;
+}
+html.dark [class~="bg-amber-500"],
+html.dark [class~="bg-amber-400"],
+html.dark [class~="bg-amber-600"],
+html.dark [class~="bg-yellow-500"],
+html.dark [class~="bg-yellow-400"] {
+  background: linear-gradient(100deg, #0b3f91, #0756e7) !important;
+  color: #fff !important;
+}
+html.dark [class*="bg-amber-500/"],
+html.dark [class*="bg-amber-400/"],
+html.dark [class*="bg-yellow-500/"],
+html.dark [class*="bg-yellow-400/"] {
+  background-color: rgba(7, 86, 231, .13) !important;
+}
+html.dark [class*="border-amber-"],
+html.dark [class*="border-yellow-"] {
+  border-color: rgba(56, 165, 255, .42) !important;
+}
+html.dark [class*="hover:bg-amber-"]:hover,
+html.dark [class*="hover:bg-yellow-"]:hover {
+  background: linear-gradient(100deg, #1155ad, #0879ff) !important;
+  color: #fff !important;
+}
+html.dark [class*="focus:border-amber-"]:focus,
+html.dark [class*="focus:border-yellow-"]:focus,
+html.dark [class*="focus-within:border-amber-"]:focus-within,
+html.dark [class*="focus-within:border-yellow-"]:focus-within {
+  border-color: #168bff !important;
+  box-shadow: 0 0 0 3px rgba(22, 139, 255, .14) !important;
+}
+html.dark [class*="shadow-amber-"],
+html.dark [class*="shadow-yellow-"] {
+  box-shadow: 0 8px 22px rgba(7, 86, 231, .22) !important;
+}
+html.dark .auth-panel {
+  border-color: rgba(22, 139, 255, .62);
+}
+html.dark .auth-panel button[type="submit"] {
+  background: linear-gradient(100deg, #0b3f91, #0756e7) !important;
+  box-shadow: 0 8px 22px rgba(7, 86, 231, .24);
+}
+
+/* Keep auth headers and dark glass panels readable under the global light theme. */
+html.light .auth-scene header,
+html.light .login-scene header {
+  background-color: transparent !important;
+  border-color: transparent !important;
+}
+html.light .auth-brand { background: transparent !important; }
+html.light .auth-brand-name,
+html.light .auth-brand-tagline,
+html.light .auth-brand-footer { color: #f5f8fc !important; }
+html.light .auth-panel {
+  color: #f5f8fc !important;
+  border-color: rgba(251, 130, 49, .66) !important;
+  background: linear-gradient(145deg, rgba(5, 17, 35, .96), rgba(4, 13, 28, .95)) !important;
+}
+html.light .auth-panel [class*="text-white"] {
+  color: #f5f8fc !important;
+}
+html.light .auth-panel [class*="text-white/"] {
+  color: rgba(226, 237, 250, .78) !important;
+}
+html.light .auth-panel [class*="text-amber-"] {
+  color: #ff984f !important;
+}
+html.light .auth-panel label { color: rgba(220, 231, 245, .78) !important; }
+html.light .auth-panel input,
+html.light .auth-panel select {
+  border-color: rgba(203, 218, 238, .22) !important;
+  background-color: rgba(224, 235, 250, .09) !important;
+  color: #f5f8fc !important;
+}
+html.light .auth-panel input::placeholder { color: rgba(205, 218, 237, .58) !important; }
+html.light .auth-panel input:focus,
+html.light .auth-panel select:focus {
+  border-color: rgba(251, 130, 49, .86) !important;
+  box-shadow: 0 0 0 3px rgba(251, 130, 49, .15) !important;
+}
+html.light .auth-panel button[type="submit"] {
+  color: #fff !important;
+}
+html.light .auth-scene button[class*="text-white"] { color: #f5f8fc !important; }
+html.light .auth-panel .text-emerald-400 { color: #42d6a0 !important; }
+html.light .auth-panel [class*="bg-amber-500/"] {
+  background-color: rgba(251, 130, 49, .14) !important;
+  border-color: rgba(251, 130, 49, .3) !important;
+}
+html.light .login-scene [class*="text-white"] { color: #fff !important; }
+html.light .login-card { color: #f5f8fc !important; }
+
+/* Drive the admin palette from React's active theme, including every panel. */
+.admin-app[data-theme="dark"] {
+  background-image: url('/resqride-night-background.png') !important;
+  color: #fff !important;
+}
+.admin-app[data-theme="light"] {
+  background-image: url('/resqride-login-background.png') !important;
+  color: #064e3b !important;
+}
+.admin-app[data-theme="light"]::before { background: rgba(2, 8, 20, .06) !important; }
+.admin-app[data-theme="light"] > aside {
+  background: rgba(240, 253, 244, .94) !important;
+  border-color: #bbf7d0 !important;
+}
+.admin-app[data-theme="light"] > div > header {
+  background: rgba(240, 253, 244, .94) !important;
+  border-color: #bbf7d0 !important;
+}
+.admin-app[data-theme="light"] main [class*="bg-white/5"],
+.admin-app[data-theme="light"] main [class*="bg-black/30"],
+.admin-app[data-theme="light"] main [class*="bg-black/20"] {
+  background-color: rgba(240, 253, 244, .94) !important;
+  border-color: #bbf7d0 !important;
+}
+.admin-app[data-theme="light"] main input,
+.admin-app[data-theme="light"] main select,
+.admin-app[data-theme="light"] main textarea {
+  background-color: rgba(255, 255, 255, .96) !important;
+  border-color: #86c9a7 !important;
+  color: #064e3b !important;
+}
+.admin-app[data-theme="light"] main input::placeholder { color: #527565 !important; }

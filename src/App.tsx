@@ -433,7 +433,7 @@ function AppInner() {
   }
 
   return (
-    <div className={`min-h-screen ${theme === "dark" ? "bg-[#020617] text-white selection:bg-amber-500/30" : "bg-[#f0fdf4] text-[#064e3b] selection:bg-emerald-500/30"}`}>
+    <div className={`user-app min-h-screen ${theme === "dark" ? "bg-[#020617] text-white selection:bg-amber-500/30" : "bg-[#f0fdf4] text-[#064e3b] selection:bg-emerald-500/30"}`}>
       <UserNavigation
         activeTab={userTab}
         onTabChange={handleUserTabChange}

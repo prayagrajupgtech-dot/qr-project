@@ -1,171 +1,82 @@
+import { useTheme } from "../../App";
+import ThemeModeButton from "../ThemeModeButton";
+
 interface LoginSelectionPageProps {
   onSelectAdmin: () => void;
   onSelectUser: () => void;
   onRegister: () => void;
 }
 
-export default function LoginSelectionPage({ onSelectAdmin, onSelectUser, onRegister }: LoginSelectionPageProps) {
+const features = {
+  admin: ["User Management", "Plan Management", "Card & Payment Tracking", "System Analytics"],
+  user: ["Create Your ID", "Manage Your Card", "Access Emergency Contact", "Update Profile"],
+};
+
+function ShieldMark() {
   return (
-    <div className="relative min-h-screen flex items-center justify-center p-4 sm:p-6 lg:p-10 overflow-hidden bg-[#020617] text-white selection:bg-sky-500/20 font-inter antialiased">
-      {/* ========== Background Layers ========== */}
-      <div className="fixed inset-0 -z-20" aria-hidden="true">
-        {/* Base radial gradient - deep navy to black */}
-        <div className="absolute inset-0 bg-gradient-to-b from-[#051022] via-[#020617] to-[#000000]" />
-        
-        {/* Mountain road atmosphere - large soft glows */}
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_60%_at_50%_80%,rgba(14,165,233,0.06)_0%,transparent_70%)]" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_50%_at_20%_20%,rgba(249,115,22,0.04)_0%,transparent_60%)]" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_50%_40%_at_80%_70%,rgba(14,165,233,0.03)_0%,transparent_60%)]" />
-        
-        {/* Subtle road surface texture */}
-        <div className="absolute bottom-0 left-0 right-0 h-1/3 bg-[linear-gradient(to_top,rgba(15,23,42,0.9)_0%,transparent_100%)]" />
-        <div className="absolute bottom-0 left-0 right-0 h-1/4 bg-[linear-gradient(90deg,rgba(14,165,233,0.02)_0%,transparent_50%,rgba(249,115,22,0.015)_100%)]" />
-        
-        {/* Distant vehicle light streaks - subtle */}
-        <div className="absolute bottom-20 left-10 w-4 h-0.5 bg-sky-400/20 blur-[4px] animate-pulse-slow" style={{animationDuration: '4s'}} />
-        <div className="absolute bottom-24 right-15 w-6 h-0.5 bg-orange-400/15 blur-[4px] animate-pulse-slow" style={{animationDuration: '3.5s', animationDelay: '1s'}} />
-        <div className="absolute bottom-18 left-1/4 w-3 h-0.5 bg-sky-400/15 blur-[4px] animate-pulse-slow" style={{animationDuration: '4.5s', animationDelay: '0.5s'}} />
+    <svg viewBox="0 0 48 54" className="h-11 w-10" fill="none" aria-hidden="true">
+      <path d="M24 3 43 10v14c0 12-8 21-19 27C13 45 5 36 5 24V10L24 3Z" fill="#08172a" stroke="#168bff" strokeWidth="3" />
+      <path d="M14 18h7v8h-7zm13 0h7v8h-7zM14 31h7v7h-7zm13 0h7v7h-7z" stroke="white" strokeWidth="1.7" />
+      <path d="M18 22h.1m13 0h.1m-13 12h.1m13 0h.1" stroke="#ff8a24" strokeWidth="2.5" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+function AccessCard({ kind, onClick, onRegister }: { kind: "admin" | "user"; onClick: () => void; onRegister?: () => void }) {
+  const admin = kind === "admin";
+  const accent = admin ? "blue" : "orange";
+  const title = admin ? "Admin" : "User";
+  const icon = admin ? (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="h-6 w-6"><circle cx="12" cy="12" r="3"/><path d="m19.4 15 .1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-2.8 1.2v.2a2 2 0 1 1-4 0V19a1.7 1.7 0 0 0-2.8-1.2l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1A1.7 1.7 0 0 0 3 12.2H3a2 2 0 1 1 0-4h.2A1.7 1.7 0 0 0 4.4 5.4l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1A1.7 1.7 0 0 0 10 1.4v-.2a2 2 0 1 1 4 0v.2a1.7 1.7 0 0 0 2.8 1.2l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0 1.2 2.8h.2a2 2 0 1 1 0 4h-.2a1.7 1.7 0 0 0-1.4 2.8Z" transform="translate(0 2) scale(.9)"/></svg>
+  ) : (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="h-6 w-6"><circle cx="12" cy="8" r="4"/><path d="M4 21v-2a8 8 0 0 1 16 0v2"/></svg>
+  );
+  return (
+    <article className={`login-card login-card-${accent}`}>
+      <div className="flex items-start justify-between">
+        <div className={`login-card-icon ${admin ? "text-sky-300" : "text-orange-300"}`}>{icon}</div>
+        <span className={`login-pill ${admin ? "text-sky-300" : "text-orange-300"}`}>{title}</span>
       </div>
+      <h2 className="mt-2 text-[21px] font-extrabold uppercase tracking-tight text-white">{title} <span className={admin ? "text-sky-400" : "text-orange-400"}>Login</span></h2>
+      <p className="mt-1.5 min-h-9 max-w-[29rem] text-[12px] leading-[1.45] text-slate-200/80">{admin ? "Manage users, plans & ID cards across the entire system console." : "Create and manage your own digital ID card and verification QR codes."}</p>
+      <ul className={`mt-3 space-y-1.5 text-[10px] text-slate-200/90 ${admin ? "login-check-blue" : "login-check-orange"}`}>
+        {features[kind].map((feature) => <li key={feature} className="flex items-center gap-2"><span aria-hidden="true">✓</span>{feature}</li>)}
+      </ul>
+      <div className="mt-auto space-y-1.5 pt-4">
+        <button className={`login-action ${admin ? "login-action-blue" : "login-action-orange"}`} onClick={onClick}>Login <span>→</span></button>
+        {!admin && <button className="login-action login-register" onClick={onRegister}>Register <span>→</span></button>}
+      </div>
+    </article>
+  );
+}
 
-      {/* Foreground vignette */}
-      <div className="fixed inset-0 -z-10 bg-gradient-to-t from-[#020617]/80 via-transparent to-transparent pointer-events-none" aria-hidden="true" />
-
-      {/* ========== Main Content ========== */}
-      <main className="relative z-10 w-full max-w-5xl mx-auto">
-        {/* Header Section */}
-        <header className="text-center mb-10 sm:mb-14">
-          {/* Logo */}
-          <div className="inline-flex items-center justify-center w-20 h-20 sm:w-24 sm:h-24 rounded-2xl bg-gradient-to-br from-sky-500 to-sky-600 shadow-[0_8px_32px_rgba(14,165,233,0.3)] mb-6 animate-fade-in-down">
-            <svg className="w-10 h-10 sm:w-12 sm:h-12 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-              <rect x="3" y="3" width="18" height="18" rx="4" />
-              <path d="M12 8v8M8 12h8" />
-            </svg>
+export default function LoginSelectionPage({ onSelectAdmin, onSelectUser, onRegister }: LoginSelectionPageProps) {
+  const { theme, toggleTheme } = useTheme();
+  return (
+    <div className="login-scene min-h-screen w-full overflow-auto px-4 py-8 text-white sm:px-8">
+      <ThemeModeButton isDark={theme === "dark"} onToggle={toggleTheme} />
+      <div className="login-scene-shade" aria-hidden="true" />
+      <div className="relative mx-auto flex min-h-[calc(100vh-4rem)] w-full max-w-[960px] flex-col justify-center">
+        <header className="relative mb-5 text-center sm:mb-7">
+          <div className="absolute left-0 top-0 hidden items-center gap-2 sm:flex" aria-label="ResQRide logo">
+            <span className="font-black italic leading-none"><span className="text-white">ResQ</span><span className="text-orange-400">Ride</span></span>
           </div>
-
-          {/* Brand Name */}
-          <h1 className="font-manrope text-4xl sm:text-5xl lg:text-6xl font-extrabold uppercase tracking-tight text-white mb-3 animate-fade-in-up" style={{animationDelay: '100ms'}}>
-            ResQRide
-          </h1>
-
-          {/* Subtitle */}
-          <p className="font-manrope text-xs sm:text-sm font-semibold uppercase tracking-[6px] text-sky-400 mb-3 animate-fade-in-up" style={{animationDelay: '200ms'}}>
-            Vehicle QR Safety Platform
-          </p>
-
-          {/* New Tagline */}
-          <p className="text-base sm:text-lg text-white/60 max-w-2xl mx-auto leading-relaxed animate-fade-in-up" style={{animationDelay: '300ms'}}>
-            Your vehicle. Your emergency contact. One scan away.
-          </p>
-
-          {/* Divider */}
-          <div className="mt-6 flex items-center justify-center gap-4 animate-fade-in" style={{animationDelay: '400ms'}}>
-            <div className="w-16 h-px bg-gradient-to-r from-transparent via-sky-500/40 to-transparent" />
-            <span className="text-[10px] font-medium uppercase tracking-[4px] text-white/30">SELECT ACCESS</span>
-            <div className="w-16 h-px bg-gradient-to-r from-transparent via-orange-500/40 to-transparent" />
-          </div>
+          <div className="mb-1 flex justify-center"><ShieldMark /></div>
+          <h1 className="font-manrope text-[38px] font-black italic leading-none tracking-[-2px] sm:text-[48px]">ResQ<span className="text-orange-400">Ride</span></h1>
+          <p className="mt-2 text-[10px] font-semibold uppercase tracking-[4px] text-slate-100 sm:text-[12px]">Vehicle QR Safety System</p>
+          <p className="mt-1.5 text-[11px] text-slate-300">Your vehicle. Your emergency contact. One scan away.</p>
+          <p className="mt-3 text-[10px] text-slate-300">Please select your login type to continue to the system.</p>
         </header>
-
-        {/* Cards Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8 mb-12">
-          {/* ========== Admin Card ========== */}
-          <article className="group relative bg-white/5 border border-white/10 backdrop-blur-xl rounded-3xl p-7 sm:p-8 lg:p-10 flex flex-col transition-all duration-500 hover:border-sky-500/30 hover:bg-white/7 hover:shadow-[0_20px_60px_rgba(14,165,233,0.12)] animate-slide-up" style={{animationDelay: '200ms'}}>
-            {/* Top accent line */}
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-0 group-hover:w-3/4 h-px bg-gradient-to-r from-transparent via-sky-400 to-transparent transition-all duration-500 rounded-full" aria-hidden="true" />
-            
-            {/* Icon */}
-            <div className="relative w-12 h-12 bg-gradient-to-br from-sky-500/20 to-sky-600/10 border border-sky-500/20 rounded-xl flex items-center justify-center mb-5 group-hover:border-sky-400/40 group-hover:shadow-[0_0_24px_rgba(14,165,233,0.2)] transition-all duration-300">
-              <svg className="w-6 h-6 text-sky-400 group-hover:text-sky-300 transition-colors" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                <circle cx="12" cy="12" r="3" />
-                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" />
-              </svg>
-            </div>
-
-            {/* Content */}
-            <div className="space-y-3 flex-1">
-              <h2 className="font-manrope text-xl sm:text-2xl font-extrabold uppercase tracking-tight text-white group-hover:text-sky-300 transition-colors duration-300">
-                ADMIN LOGIN
-              </h2>
-              <p className="text-sm text-white/50 leading-relaxed">
-                Manage users, plans & ID cards across the entire system console.
-              </p>
-            </div>
-
-            {/* Button */}
-            <div className="pt-6">
-              <button
-                onClick={onSelectAdmin}
-                className="relative w-full bg-gradient-to-r from-sky-500 to-sky-600 text-white font-bold uppercase text-xs sm:text-sm tracking-widest py-3.5 sm:py-4 rounded-xl shadow-[0_8px_24px_rgba(14,165,233,0.3)] hover:shadow-[0_12px_32px_rgba(14,165,233,0.4)] hover:from-sky-400 hover:to-sky-500 active:scale-[0.98] transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#020617]"
-              >
-                <span className="relative z-10">LOGIN</span>
-                {/* Shimmer overlay */}
-                <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 rounded-xl pointer-events-none" aria-hidden="true" />
-              </button>
-            </div>
-          </article>
-
-          {/* ========== User Card ========== */}
-          <article className="group relative bg-white/5 border border-white/10 backdrop-blur-xl rounded-3xl p-7 sm:p-8 lg:p-10 flex flex-col transition-all duration-500 hover:border-orange-500/30 hover:bg-white/7 hover:shadow-[0_20px_60px_rgba(249,115,22,0.12)] animate-slide-up" style={{animationDelay: '300ms'}}>
-            {/* Top accent line */}
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-0 group-hover:w-3/4 h-px bg-gradient-to-r from-transparent via-orange-400 to-transparent transition-all duration-500 rounded-full" aria-hidden="true" />
-            
-            {/* Icon */}
-            <div className="relative w-12 h-12 bg-gradient-to-br from-orange-500/20 to-orange-600/10 border border-orange-500/20 rounded-xl flex items-center justify-center mb-5 group-hover:border-orange-400/40 group-hover:shadow-[0_0_24px_rgba(249,115,22,0.2)] transition-all duration-300">
-              <svg className="w-6 h-6 text-orange-400 group-hover:text-orange-300 transition-colors" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-                <circle cx="12" cy="7" r="4" />
-              </svg>
-            </div>
-
-            {/* Content */}
-            <div className="space-y-3 flex-1">
-              <h2 className="font-manrope text-xl sm:text-2xl font-extrabold uppercase tracking-tight text-white group-hover:text-orange-300 transition-colors duration-300">
-                USER LOGIN
-              </h2>
-              <p className="text-sm text-white/50 leading-relaxed">
-                Create and manage your own digital ID card and verification QR codes.
-              </p>
-            </div>
-
-            {/* Buttons */}
-            <div className="pt-6 space-y-3">
-              <button
-                onClick={onSelectUser}
-                className="relative w-full bg-white text-[#020617] font-bold uppercase text-xs sm:text-sm tracking-widest py-3.5 sm:py-4 rounded-xl shadow-[0_8px_24px_rgba(255,255,255,0.15)] hover:bg-white/90 hover:shadow-[0_12px_32px_rgba(255,255,255,0.2)] active:scale-[0.98] transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-[#020617]"
-              >
-                <span className="relative z-10">LOGIN</span>
-                <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 rounded-xl pointer-events-none" aria-hidden="true" />
-              </button>
-              <button
-                onClick={onRegister}
-                className="relative w-full bg-white/5 text-white font-bold uppercase text-xs sm:text-sm tracking-widest py-3.5 sm:py-4 rounded-xl border border-white/10 hover:bg-white/10 hover:border-white/20 active:scale-[0.98] transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-orange-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#020617]"
-              >
-                <span className="relative z-10">REGISTER</span>
-                <span className="absolute inset-0 bg-gradient-to-r from-transparent via-orange-500/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 rounded-xl pointer-events-none" aria-hidden="true" />
-              </button>
-            </div>
-          </article>
-        </div>
-
-        {/* Footer */}
-        <footer className="text-center pt-8 border-t border-white/10">
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-6 text-[10px] sm:text-xs font-semibold uppercase tracking-[3px] text-white/30">
-            <span className="flex items-center gap-1.5 group">
-              <span className="relative">Safer Journeys</span>
-              <span className="absolute -bottom-1 left-0 right-0 h-0.5 bg-sky-400 scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-center" aria-hidden="true" />
-            </span>
-            <span className="w-1 h-1 rounded-full bg-white/20 sm:hidden" aria-hidden="true" />
-            <span className="flex items-center gap-1.5 group">
-              <span className="relative">Instant Help</span>
-              <span className="absolute -bottom-1 left-0 right-0 h-0.5 bg-orange-400 scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-center" aria-hidden="true" />
-            </span>
-            <span className="w-1 h-1 rounded-full bg-white/20 sm:hidden" aria-hidden="true" />
-            <span className="flex items-center gap-1.5 group">
-              <span className="relative">Stronger Communities</span>
-              <span className="absolute -bottom-1 left-0 right-0 h-0.5 bg-emerald-400 scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-center" aria-hidden="true" />
-            </span>
-          </div>
+        <main className="mx-auto grid w-full max-w-[730px] grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4">
+          <AccessCard kind="admin" onClick={onSelectAdmin} />
+          <AccessCard kind="user" onClick={onSelectUser} onRegister={onRegister} />
+        </main>
+        <footer className="mt-5 flex flex-wrap items-center justify-center gap-x-7 gap-y-2 text-[9px] text-slate-300/90">
+          <span className="flex items-center gap-2"><i className="h-2 w-2 rounded-sm border border-orange-400"/>Safer Journeys</span>
+          <span className="flex items-center gap-2"><i className="h-2 w-2 rounded-sm border border-orange-400"/>Instant Help</span>
+          <span className="flex items-center gap-2"><i className="h-2 w-2 rounded-full border border-orange-400"/>Stronger Communities</span>
         </footer>
-      </main>
+      </div>
     </div>
   );
 }

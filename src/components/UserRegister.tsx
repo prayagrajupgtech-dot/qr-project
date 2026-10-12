@@ -3,6 +3,7 @@ import { countries } from "../utils/countries";
 import PasswordStrength, { validatePassword } from "./PasswordStrength";
 import { useAuth } from "../contexts/AuthContext";
 import { supabase } from "../lib/supabase";
+import UserAuthShell from "./auth/UserAuthShell";
 
 export default function UserRegister() {
   const { signUpWithGoogle } = useAuth();
@@ -135,10 +136,10 @@ export default function UserRegister() {
   };
 
   return (
-    <div className="min-h-screen bg-[#020617] text-white flex items-center justify-center p-6 selection:bg-amber-500/30">
+    <UserAuthShell>
       <div className="w-full max-w-md space-y-6">
         {/* Card Header */}
-        <div className="border border-white/10 bg-white/5 rounded-[2.5rem] p-8 shadow-2xl space-y-6">
+        <div className="auth-panel space-y-6">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-xs font-black uppercase tracking-[3px] text-amber-500">User Access</p>
@@ -338,6 +339,6 @@ export default function UserRegister() {
           </button>
         </div>
       </div>
-    </div>
+    </UserAuthShell>
   );
 }

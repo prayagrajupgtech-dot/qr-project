@@ -1,5 +1,6 @@
 import { FormEvent, useState } from "react";
 import { useAuth } from "../contexts/AuthContext";
+import UserAuthShell from "./auth/UserAuthShell";
 
 export default function UserLogin() {
   const { signInWithGoogle, signInWithEmail, signInWithMobile, resetPassword, loading } = useAuth();
@@ -79,10 +80,10 @@ export default function UserLogin() {
   };
 
   return (
-    <div className="min-h-screen bg-[#020617] text-white flex items-center justify-center p-6 selection:bg-amber-500/30">
+    <UserAuthShell>
       <div className="w-full max-w-md space-y-6">
         {/* Card Header */}
-        <div className="border border-white/10 bg-white/5 rounded-[2.5rem] p-8 shadow-2xl space-y-6">
+        <div className="auth-panel space-y-6">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-xs font-black uppercase tracking-[3px] text-amber-500">User Access</p>
@@ -285,7 +286,7 @@ export default function UserLogin() {
       {/* Forgot Password Modal */}
       {showForgotModal && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-6">
-          <form onSubmit={handleForgotPassword} className="bg-slate-900 border border-white/10 max-w-md w-full rounded-3xl p-8 space-y-5">
+          <form onSubmit={handleForgotPassword} className="auth-panel max-w-md w-full space-y-5">
             <h3 className="text-xl font-black uppercase tracking-tight text-white">Reset Account Password</h3>
             <p className="text-xs text-white/50">Enter your registered email address to receive password recovery instructions.</p>
 
@@ -320,6 +321,6 @@ export default function UserLogin() {
           </form>
         </div>
       )}
-    </div>
+    </UserAuthShell>
   );
 }
