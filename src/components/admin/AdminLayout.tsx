@@ -24,7 +24,7 @@ export default function AdminLayout({
   const isDark = theme === "dark";
 
   return (
-    <div data-theme={theme} className={`admin-app min-h-screen flex ${isDark ? "bg-[#020617] text-white" : "bg-[#f0fdf4] text-[#064e3b]"}`}>
+    <div data-theme={theme} className={`admin-app min-h-screen flex ${isDark ? "bg-[#020617] text-white" : "bg-[#f0fdf4] text-[#111827]"}`}>
       <AdminSidebar currentTab={currentTab} onNavigate={onNavigate} onLogout={onLogout} />
       <div className="flex-1 flex flex-col min-w-0">
         <AdminHeader title={title} subtitle={subtitle} />

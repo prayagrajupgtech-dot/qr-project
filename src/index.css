@@ -234,6 +234,7 @@
 .theme-mode-toggle:hover { border-color: rgba(56, 165, 255, .7); transform: translateY(-1px); }
 .theme-mode-toggle:focus-visible { outline: 2px solid #38a5ff; outline-offset: 3px; }
 .theme-mode-toggle > span:first-child { font-size: 14px; }
+.theme-toggle-icon { filter: brightness(.78) saturate(.78); opacity: .84; }
 @media (max-width: 639px) {
   .auth-scene { background-attachment: fixed; background-position: center top; background-size: 100vw auto; }
   .auth-scene-content { padding: 18px 12px; }
@@ -679,6 +680,27 @@ html.dark [class*="shadow-amber-"],
 html.dark [class*="shadow-yellow-"] {
   box-shadow: 0 8px 22px rgba(7, 86, 231, .22) !important;
 }
+
+/* Keep editable fields dark in dark mode, including browser autofill and focus. */
+html.dark input:not([type="checkbox"]):not([type="radio"]),
+html.dark select,
+html.dark textarea {
+  color-scheme: dark;
+  background-color: rgba(15, 23, 42, .96) !important;
+  color: #f1f5f9 !important;
+  border-color: rgba(148, 163, 184, .32) !important;
+}
+html.dark input::placeholder,
+html.dark textarea::placeholder { color: #94a3b8 !important; opacity: 1; }
+html.dark input:-webkit-autofill,
+html.dark input:-webkit-autofill:hover,
+html.dark input:-webkit-autofill:focus,
+html.dark textarea:-webkit-autofill,
+html.dark select:-webkit-autofill {
+  -webkit-text-fill-color: #f1f5f9 !important;
+  -webkit-box-shadow: 0 0 0 1000px #0f172a inset !important;
+  caret-color: #f1f5f9 !important;
+}
 html.dark .auth-panel {
   border-color: rgba(22, 139, 255, .62);
 }
@@ -743,8 +765,12 @@ html.light .login-card { color: #f5f8fc !important; }
 }
 .admin-app[data-theme="light"] {
   background-image: url('/resqride-login-background.png') !important;
-  color: #064e3b !important;
+  color: #111827 !important;
 }
+.admin-app[data-theme="light"] > div > header :is(h1, p, span, button) { color: #111827 !important; }
+.admin-app[data-theme="light"] > aside :is(h1, p),
+.admin-app[data-theme="light"] > aside nav > button:not(.bg-amber-500) { color: #111827 !important; }
+.admin-app[data-theme="light"] > aside nav > button:not(.bg-amber-500) [class*="text-white"] { color: #fff !important; }
 .admin-app[data-theme="light"]::before { background: rgba(2, 8, 20, .06) !important; }
 .admin-app[data-theme="light"] > aside {
   background: rgba(240, 253, 244, .94) !important;
@@ -765,9 +791,15 @@ html.light .login-card { color: #f5f8fc !important; }
 .admin-app[data-theme="light"] main textarea {
   background-color: rgba(255, 255, 255, .96) !important;
   border-color: #86c9a7 !important;
-  color: #064e3b !important;
+  color: #111827 !important;
 }
-.admin-app[data-theme="light"] main input::placeholder { color: #527565 !important; }
+.admin-app[data-theme="light"] main input::placeholder { color: #4b5563 !important; }
+.admin-app[data-theme="light"] main [class*="text-[#064e3b]"],
+.admin-app[data-theme="light"] main [class*="text-[#047857]"],
+.admin-app[data-theme="light"] main [class*="text-[#059669]"],
+.admin-app[data-theme="light"] main [class*="text-[#065f46]"],
+.admin-app[data-theme="light"] main [class*="text-emerald-"],
+.admin-app[data-theme="light"] main [class*="text-green-"] { color: #111827 !important; }
 
 .admin-app[data-theme="dark"] main {
   border-radius: 24px;

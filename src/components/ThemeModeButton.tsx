@@ -12,7 +12,7 @@ export default function ThemeModeButton({ isDark, onToggle }: ThemeModeButtonPro
       aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
       title={isDark ? "Switch to light mode" : "Switch to dark mode"}
     >
-      <span aria-hidden="true">{isDark ? "☀️" : "🌙"}</span>
+      <span className="theme-toggle-icon" aria-hidden="true">{isDark ? "☀️" : "🌙"}</span>
       <span>{isDark ? "Light mode" : "Dark mode"}</span>
     </button>
   );

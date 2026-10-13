@@ -33,7 +33,7 @@ export default function UserNavigation({ activeTab, onTabChange, onLogout }: Use
             ))}
           </div>
           <button onClick={toggleTheme} className={`p-2 rounded-lg text-sm transition-all ${isDark ? "bg-white/10 text-white/60 hover:text-white" : "bg-[#d1fae5] text-[#047857] hover:text-[#064e3b]"}`}>
-            {isDark ? "☀️" : "🌙"}
+            <span className="theme-toggle-icon">{isDark ? "☀️" : "🌙"}</span>
           </button>
           <button onClick={onLogout} className="px-3 py-2 rounded-lg text-xs font-black text-red-400 hover:text-red-300 transition-colors">LOG OUT</button>
         </div>
@@ -47,7 +47,7 @@ export default function UserNavigation({ activeTab, onTabChange, onLogout }: Use
         </div>
         <div className="flex items-center gap-2">
           <button onClick={toggleTheme} className={`p-2 rounded-lg text-sm ${isDark ? "bg-white/10 text-white/60" : "bg-[#d1fae5] text-[#047857]"}`}>
-            {isDark ? "☀️" : "🌙"}
+            <span className="theme-toggle-icon">{isDark ? "☀️" : "🌙"}</span>
           </button>
           <button onClick={onLogout} className="px-2 py-2 rounded-lg text-xs font-black text-red-400">EXIT</button>
         </div>
